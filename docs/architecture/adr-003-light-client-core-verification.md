@@ -224,7 +224,7 @@ pub trait TrustThreshold: Copy + Clone {
 }
 ```
 
-We provide a conenvient implementation that takes a numerator and a denominator. The default is of course 1/3.
+We provide a convenient implementation that takes a numerator and a denominator. The default is of course 1/3.
 
 ### Requester
 
