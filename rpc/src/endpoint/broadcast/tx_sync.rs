@@ -1,6 +1,5 @@
 //! `/broadcast_tx_sync`: returns with the response from `CheckTx`.
 
-use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use tendermint::{abci::Code, Hash};
 
@@ -45,8 +44,8 @@ pub struct Response {
     pub code: Code,
 
     /// Data
-    #[serde(with = "serializers::bytes::base64string")]
-    pub data: Bytes,
+    #[serde(with = "serializers::bytes::hexstring")]
+    pub data: Vec<u8>,
 
     /// Log
     pub log: String,

@@ -484,7 +484,11 @@ fn incoming_fixtures() {
             "broadcast_tx_async" => {
                 let result = endpoint::broadcast::tx_async::Response::from_string(content).unwrap();
                 assert_eq!(result.code, abci::Code::Ok);
-                assert!(result.data.is_empty());
+                assert_eq!(
+                    result.data,
+                    hex::decode("62726f6164636173745f74785f6173796e6320726573756c7420636f6465")
+                        .unwrap()
+                );
                 assert_ne!(
                     result.hash,
                     Hash::from_bytes(Algorithm::Sha256, &[0; 32]).unwrap()
@@ -558,7 +562,11 @@ fn incoming_fixtures() {
             "broadcast_tx_sync" => {
                 let result = endpoint::broadcast::tx_sync::Response::from_string(content).unwrap();
                 assert_eq!(result.code, abci::Code::Ok);
-                assert!(result.data.is_empty());
+                assert_eq!(
+                    result.data,
+                    hex::decode("62726f6164636173745f74785f73796e6320726573756c7420636f6465")
+                        .unwrap()
+                );
                 assert_ne!(
                     result.hash,
                     Hash::from_bytes(Algorithm::Sha256, &[0; 32]).unwrap()
