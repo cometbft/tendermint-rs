@@ -1,5 +1,6 @@
 //! `/broadcast_tx_async`: broadcast a transaction and return immediately.
 
+use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use tendermint::{abci::Code, Hash};
 
@@ -45,7 +46,7 @@ pub struct Response {
 
     /// Data
     #[serde(with = "serializers::bytes::hexstring")]
-    pub data: Vec<u8>,
+    pub data: Bytes,
 
     /// Log
     pub log: String,

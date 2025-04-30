@@ -9,13 +9,15 @@ pub mod hexstring {
     use crate::serializers::cow_str::CowStr;
 
     /// Deserialize a hex-encoded string into `Vec<u8>`
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
     where
         D: Deserializer<'de>,
+        T: From<Vec<u8>>,
     {
         let string = Option::<CowStr<'_>>::deserialize(deserializer)?.unwrap_or_default();
         hex::decode_upper(&string)
             .or_else(|_| hex::decode(&string))
+            .map(Into::into)
             .map_err(serde::de::Error::custom)
     }
 
