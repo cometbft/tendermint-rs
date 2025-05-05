@@ -16,7 +16,7 @@ protocol as it is currently implemented in the Tendermint Core codebase.
 The [English Specification](fastsync.md) provides a detailed description of the
 fast sync problem and the properties a correct protocol must satisfy. It also
 includes a detailed description of the protocol as currently implemented in Go,
-and an anlaysis of the implementation with respect to the properties.
+and an analysis of the implementation with respect to the properties.
 
 It was found that the current implementation does not satisfy certain
 properties, and is therefore not a correct solution to the fast sync problem.
