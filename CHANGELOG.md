@@ -6,11 +6,11 @@
 
 ### BUG FIXES
 
-- [tendermint-proto] Intoduce `CowStr` deserializer.
+- `[tendermint-proto]` Intoduce `CowStr` deserializer.
   ([\#1474](https://github.com/informalsystems/tendermint-rs/issues/1474), [\#1475](https://github.com/informalsystems/tendermint-rs/pull/1475))
-- [tendermint] Fix deserialization from `serde_json::Value`.
+- `[tendermint]` Fix deserialization from `serde_json::Value`.
   ([\#1474](https://github.com/informalsystems/tendermint-rs/issues/1474), [\#1475](https://github.com/informalsystems/tendermint-rs/pull/1475))
-- [tendermint-rpc] Fix deserialization of `data` field in `ResultBroadcastTx`
+- `[tendermint-rpc]` Fix deserialization of `data` field in `ResultBroadcastTx`
   ([\#1500](https://github.com/informalsystems/tendermint-rs/issues/1500))
 
 ## v0.40.3
@@ -22,11 +22,11 @@ ASAP.
 
 ### BUG FIXES
 
-- [tendermint] export `abci::event::v0_37` to construct `EventAttribute::V037` variants.
+- `[tendermint]` Export `abci::event::v0_37` to construct `EventAttribute::V037` variants.
   ([\#1479](https://github.com/informalsystems/tendermint-rs/pull/1479), ([\#1480](https://github.com/informalsystems/tendermint-rs/pull/1480))
-- [tendermint-light-client-js] bump `serde-wasm-bindgen` to `v0.6.5` and `js-sys` to `=v0.3.70` to
+- `[tendermint-light-client-js]` Bump `serde-wasm-bindgen` to `v0.6.5` and `js-sys` to `=v0.3.70` to
   fix compilation failure of `wasm-bindgen-test`. ([\#1481](https://github.com/informalsystems/tendermint-rs/pull/1481))
-- `[light-client-verifier]` check for duplicate votes
+- `[light-client-verifier]` Check for duplicate votes
   ([ISA-2025-003](https://github.com/informalsystems/tendermint-rs/security/advisories/GHSA-6jrf-4jv4-r9mw))
 
 ## v0.40.2
