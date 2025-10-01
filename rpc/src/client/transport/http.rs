@@ -23,7 +23,7 @@ use super::auth;
 const USER_AGENT: &str = concat!("tendermint.rs/", env!("CARGO_PKG_VERSION"));
 
 /// `reqwest` http client re-exported for compatibility convenience
-pub type ReqwestClient = reqwest::Client;
+pub type InnerClient = reqwest::Client;
 
 /// A JSON-RPC/HTTP Tendermint RPC client (implements [`crate::Client`]).
 ///
@@ -53,7 +53,7 @@ pub type ReqwestClient = reqwest::Client;
 /// ```
 #[derive(Debug, Clone)]
 pub struct HttpClient {
-    inner: ReqwestClient,
+    inner: InnerClient,
     url: reqwest::Url,
     compat: CompatMode,
 }
@@ -65,7 +65,7 @@ pub struct Builder {
     proxy_url: Option<HttpClientUrl>,
     user_agent: Option<String>,
     timeout: Duration,
-    client: Option<ReqwestClient>,
+    client: Option<InnerClient>,
 }
 
 impl Builder {
@@ -108,7 +108,7 @@ impl Builder {
     /// ## Warning
     /// This will override the following options set on the builder:
     /// `timeout`, `user_agent`, and `proxy_url`.
-    pub fn client(mut self, client: ReqwestClient) -> Self {
+    pub fn client(mut self, client: InnerClient) -> Self {
         self.client = Some(client);
         self
     }
@@ -149,7 +149,7 @@ impl HttpClient {
     /// Construct a new Tendermint RPC HTTP/S client connecting to the given
     /// URL. This avoids using the `Builder` and thus does not perform any
     /// validation of the configuration.
-    pub fn new_from_parts(inner: ReqwestClient, url: reqwest::Url, compat: CompatMode) -> Self {
+    pub fn new_from_parts(inner: InnerClient, url: reqwest::Url, compat: CompatMode) -> Self {
         Self { inner, url, compat }
     }
 
