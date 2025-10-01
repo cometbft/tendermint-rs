@@ -45,7 +45,7 @@ pub struct Response {
     pub code: Code,
 
     /// Data
-    #[serde(with = "serializers::bytes::base64string")]
+    #[serde(with = "serializers::bytes::hexstring")]
     pub data: Bytes,
 
     /// Log
