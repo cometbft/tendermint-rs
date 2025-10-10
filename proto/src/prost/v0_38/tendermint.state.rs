@@ -3,7 +3,6 @@
 /// of the legacy ABCI calls during block processing.
 /// Note ReponseDeliverTx is renamed to ExecTxResult but they are semantically the same
 /// Kept for backwards compatibility for versions prior to v0.38
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LegacyAbciResponses {
     #[prost(message, repeated, tag = "1")]
@@ -14,14 +13,12 @@ pub struct LegacyAbciResponses {
     pub begin_block: ::core::option::Option<ResponseBeginBlock>,
 }
 /// ResponseBeginBlock is kept for backwards compatibility for versions prior to v0.38
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResponseBeginBlock {
     #[prost(message, repeated, tag = "1")]
     pub events: ::prost::alloc::vec::Vec<super::abci::Event>,
 }
 /// ResponseEndBlock is kept for backwards compatibility for versions prior to v0.38
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ResponseEndBlock {
     #[prost(message, repeated, tag = "1")]
@@ -32,7 +29,6 @@ pub struct ResponseEndBlock {
     pub events: ::prost::alloc::vec::Vec<super::abci::Event>,
 }
 /// ValidatorsInfo represents the latest validator set, or the last height it changed
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ValidatorsInfo {
     #[prost(message, optional, tag = "1")]
@@ -41,7 +37,6 @@ pub struct ValidatorsInfo {
     pub last_height_changed: i64,
 }
 /// ConsensusParamsInfo represents the latest consensus params, or the last height it changed
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConsensusParamsInfo {
     #[prost(message, optional, tag = "1")]
@@ -49,7 +44,6 @@ pub struct ConsensusParamsInfo {
     #[prost(int64, tag = "2")]
     pub last_height_changed: i64,
 }
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AbciResponsesInfo {
     #[prost(message, optional, tag = "1")]
@@ -61,7 +55,6 @@ pub struct AbciResponsesInfo {
         super::abci::ResponseFinalizeBlock,
     >,
 }
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Version {
     #[prost(message, optional, tag = "1")]
@@ -69,7 +62,6 @@ pub struct Version {
     #[prost(string, tag = "2")]
     pub software: ::prost::alloc::string::String,
 }
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct State {
     #[prost(message, optional, tag = "1")]

@@ -12,7 +12,7 @@ use git2::{
 use subtle_encoding::hex;
 use walkdir::WalkDir;
 
-use crate::constants::TendermintVersion;
+use crate::constants::{apply_prost_v014_fixes, TendermintVersion};
 
 /// Clone or open+fetch a repository and check out a specific commitish
 /// In case of an existing repository, the origin remote will be set to `url`.
@@ -176,8 +176,16 @@ pub fn copy_files(src_dir: &Path, target_dir: &Path) {
                     .unwrap_or(false)
         })
         .map(|res| {
-            let e = res?;
-            copy(e.path(), target_dir.join(e.file_name()))
+            let e = res.unwrap();
+            let dest_path = target_dir.join(e.file_name());
+            // Apply prost v0.14 fixes to .rs files
+            if e.path().extension().map_or(false, |ext| ext == "rs") {
+                let content = std::fs::read_to_string(e.path())?;
+                let fixed_content = apply_prost_v014_fixes(&content);
+                std::fs::write(dest_path, fixed_content)
+            } else {
+                copy(e.path(), dest_path).map(|_| ())
+            }
         })
         .filter_map(|res| res.err())
         .collect::<Vec<_>>();

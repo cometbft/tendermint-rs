@@ -130,6 +130,25 @@ pub static CUSTOM_TYPE_ATTRIBUTES_V_037: &[(&str, &str)] = &[(
 
 pub static CUSTOM_TYPE_ATTRIBUTES_V_038: &[(&str, &str)] = &[];
 
+pub static CUSTOM_TYPE_ATTRIBUTES_PROST_V_014: &[(&str, &str)] = &[
+    // Remove Eq, Hash from all struct derives
+    (
+        r"#\[derive\(Clone, PartialEq, Eq, Hash, ::prost::Message\)\]",
+        "#[derive(Clone, PartialEq, ::prost::Message)]",
+    ),
+    // Remove Eq, Hash from Copy structs
+    (
+        r"#\[derive\(Clone, Copy, PartialEq, Eq, Hash, 
+  ::prost::Message\)\]",
+        "#[derive(Clone, Copy, PartialEq, ::prost::Message)]",
+    ),
+    // Remove Eq, Hash from Oneof enums
+    (
+        r"#\[derive\(Clone, PartialEq, Eq, Hash, ::prost::Oneof\)\]",
+        "#[derive(Clone, PartialEq, ::prost::Oneof)]",
+    ),
+];
+
 /// Custom field attributes applied on top of protobuf fields in (a) struct(s)
 /// The first item in the tuple defines the field where the annotation should apply and
 /// the second item is the string that should be added as annotation.
@@ -304,4 +323,13 @@ pub fn get_custom_type_attributes(version: &TendermintVersion) -> &[(&str, &str)
         "v0_38" => CUSTOM_TYPE_ATTRIBUTES_V_038,
         _ => unreachable!(),
     }
+}
+
+pub fn apply_prost_v014_fixes(content: &str) -> String {
+    let mut result = content.to_string();
+    for (pattern, replacement) in CUSTOM_TYPE_ATTRIBUTES_PROST_V_014 {
+        let re = regex::Regex::new(pattern).unwrap();
+        result = re.replace_all(&result, *replacement).to_string();
+    }
+    result
 }
