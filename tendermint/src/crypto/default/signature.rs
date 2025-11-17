@@ -7,7 +7,7 @@ use crate::{PublicKey, Signature};
 pub struct Verifier;
 
 impl crate::crypto::signature::Verifier for Verifier {
-    fn verify(pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error> {
+    fn verify(&self, pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error> {
         #[allow(unreachable_patterns)]
         match pubkey {
             PublicKey::Ed25519(pk) => {

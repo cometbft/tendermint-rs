@@ -176,11 +176,17 @@ impl Info {
 
     /// Verify the given signature against the given sign_bytes using the validators
     /// public key.
-    pub fn verify_signature<V>(&self, sign_bytes: &[u8], signature: &Signature) -> Result<(), Error>
+    pub fn verify_signature<V>(
+        &self,
+        verifier: &V,
+        sign_bytes: &[u8],
+        signature: &Signature,
+    ) -> Result<(), Error>
     where
         V: Verifier,
     {
-        V::verify(self.pub_key, sign_bytes, signature)
+        verifier
+            .verify(self.pub_key, sign_bytes, signature)
             .map_err(|_| Error::signature_invalid("Ed25519 signature verification failed".into()))
     }
 
