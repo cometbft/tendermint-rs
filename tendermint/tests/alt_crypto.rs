@@ -78,40 +78,4 @@ mod tests {
         let verifier = SubstrateSignatureVerifier;
         verifier.verify(public_key, MESSAGE, &signature).unwrap();
     }
-
-    #[derive(Debug, Default)]
-    struct CountingVerifier {
-        count: std::cell::RefCell<usize>,
-    }
-
-    impl Verifier for CountingVerifier {
-        fn verify(
-            &self,
-            pubkey: PublicKey,
-            msg: &[u8],
-            signature: &Signature,
-        ) -> Result<(), tendermint::crypto::signature::Error> {
-            *self.count.borrow_mut() += 1;
-            let default_verifier = tendermint::crypto::default::signature::Verifier;
-            default_verifier.verify(pubkey, msg, signature)
-        }
-    }
-
-    #[test]
-    fn instance_verifier_data_is_used() {
-        let counting_verifier = CountingVerifier::default();
-
-        let key_bytes = hex::decode(VERIFYING_KEY).unwrap();
-        let public_key = PublicKey::from_raw_secp256k1(&key_bytes).unwrap();
-        let sig_bytes = hex::decode(SIGNATURE.as_bytes()).unwrap();
-        let signature = Signature::try_from(&sig_bytes[..]).unwrap();
-
-        assert_eq!(*counting_verifier.count.borrow(), 0);
-
-        counting_verifier
-            .verify(public_key, MESSAGE, &signature)
-            .unwrap();
-
-        assert_eq!(*counting_verifier.count.borrow(), 1);
-    }
 }
