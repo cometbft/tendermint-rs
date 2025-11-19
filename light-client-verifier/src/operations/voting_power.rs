@@ -190,9 +190,9 @@ pub struct ProvidedVotingPowerCalculator<V> {
     verifier: V,
 }
 
-// Safety: the only member is phantom data
-unsafe impl<V> Send for ProvidedVotingPowerCalculator<V> {}
-unsafe impl<V> Sync for ProvidedVotingPowerCalculator<V> {}
+// Safety: ProvidedVotingPowerCalculator is Send/Sync if V is Send/Sync
+unsafe impl<V: Send> Send for ProvidedVotingPowerCalculator<V> {}
+unsafe impl<V: Sync> Sync for ProvidedVotingPowerCalculator<V> {}
 
 impl<V: Default> Default for ProvidedVotingPowerCalculator<V> {
     fn default() -> Self {
