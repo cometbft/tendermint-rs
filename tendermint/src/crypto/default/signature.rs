@@ -197,7 +197,8 @@ mod tests {
             }
             let sig = Signature::try_from(sig).unwrap();
             let verifier = Verifier;
-            verifier.verify(public_key, msg, &sig)
+            verifier
+                .verify(public_key, msg, &sig)
                 .unwrap_or_else(|_| panic!("signature should be valid for test vector {}", i));
         }
     }
@@ -287,7 +288,8 @@ mod tests {
             let sig = der_sig.to_bytes();
             let sig = Signature::try_from(sig.as_slice()).unwrap();
             let verifier = Verifier;
-            verifier.verify(public_key, msg, &sig)
+            verifier
+                .verify(public_key, msg, &sig)
                 .unwrap_or_else(|_| panic!("signature should be valid for test vector {}", i));
         }
     }
