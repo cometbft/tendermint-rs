@@ -375,7 +375,9 @@ impl NonAbsentCommitVotes {
 pub type ProdVotingPowerCalculator =
     ProvidedVotingPowerCalculator<tendermint::crypto::default::signature::Verifier>;
 
-impl<V: signature::Verifier> VotingPowerCalculator for ProvidedVotingPowerCalculator<V> {
+impl<V: signature::Verifier + Send + Sync> VotingPowerCalculator
+    for ProvidedVotingPowerCalculator<V>
+{
     fn voting_power_in(
         &self,
         signed_header: &SignedHeader,
