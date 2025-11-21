@@ -31,5 +31,5 @@ impl Display for Error {
 impl std::error::Error for Error {}
 
 pub trait Verifier {
-    fn verify(pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error>;
+    fn verify(&self, pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error>;
 }

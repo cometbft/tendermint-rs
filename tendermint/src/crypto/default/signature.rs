@@ -7,7 +7,7 @@ use crate::{PublicKey, Signature};
 pub struct Verifier;
 
 impl crate::crypto::signature::Verifier for Verifier {
-    fn verify(pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error> {
+    fn verify(&self, pubkey: PublicKey, msg: &[u8], signature: &Signature) -> Result<(), Error> {
         #[allow(unreachable_patterns)]
         match pubkey {
             PublicKey::Ed25519(pk) => {
@@ -196,7 +196,9 @@ mod tests {
                 _ => panic!("expected public key to be Ed25519: {:?}", public_key),
             }
             let sig = Signature::try_from(sig).unwrap();
-            Verifier::verify(public_key, msg, &sig)
+            let verifier = Verifier;
+            verifier
+                .verify(public_key, msg, &sig)
                 .unwrap_or_else(|_| panic!("signature should be valid for test vector {}", i));
         }
     }
@@ -285,7 +287,9 @@ mod tests {
             let der_sig = k256::ecdsa::Signature::from_der(sig).unwrap();
             let sig = der_sig.to_bytes();
             let sig = Signature::try_from(sig.as_slice()).unwrap();
-            Verifier::verify(public_key, msg, &sig)
+            let verifier = Verifier;
+            verifier
+                .verify(public_key, msg, &sig)
                 .unwrap_or_else(|_| panic!("signature should be valid for test vector {}", i));
         }
     }

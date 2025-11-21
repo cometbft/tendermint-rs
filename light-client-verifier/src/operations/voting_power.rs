@@ -1,7 +1,7 @@
 //! Provides an interface and default implementation for the `VotingPower` operation
 
 use alloc::vec::Vec;
-use core::{fmt, marker::PhantomData};
+use core::fmt;
 
 use serde::{Deserialize, Serialize};
 use tendermint::{
@@ -187,18 +187,24 @@ pub trait VotingPowerCalculator: Send + Sync {
 /// the signature verification trait.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct ProvidedVotingPowerCalculator<V> {
-    _verifier: PhantomData<V>,
+    verifier: V,
 }
 
-// Safety: the only member is phantom data
-unsafe impl<V> Send for ProvidedVotingPowerCalculator<V> {}
-unsafe impl<V> Sync for ProvidedVotingPowerCalculator<V> {}
+// Safety: ProvidedVotingPowerCalculator is Send/Sync if V is Send/Sync
+unsafe impl<V: Send> Send for ProvidedVotingPowerCalculator<V> {}
+unsafe impl<V: Sync> Sync for ProvidedVotingPowerCalculator<V> {}
 
-impl<V> Default for ProvidedVotingPowerCalculator<V> {
+impl<V: Default> Default for ProvidedVotingPowerCalculator<V> {
     fn default() -> Self {
         Self {
-            _verifier: PhantomData,
+            verifier: V::default(),
         }
+    }
+}
+
+impl<V> ProvidedVotingPowerCalculator<V> {
+    pub fn new(verifier: V) -> Self {
+        Self { verifier }
     }
 }
 
@@ -329,6 +335,7 @@ impl NonAbsentCommitVotes {
     pub fn has_voted<V: signature::Verifier>(
         &mut self,
         validator: &validator::Info,
+        verifier: &V,
     ) -> Result<Option<usize>, VerificationError> {
         if let Ok(idx) = self
             .votes
@@ -344,7 +351,7 @@ impl NonAbsentCommitVotes {
 
                 let sign_bytes = self.sign_bytes.as_slice();
                 validator
-                    .verify_signature::<V>(sign_bytes, vote.signed_vote.signature())
+                    .verify_signature(verifier, sign_bytes, vote.signed_vote.signature())
                     .map_err(|_| {
                         VerificationError::invalid_signature(
                             vote.signed_vote.signature().as_bytes().to_vec(),
@@ -368,7 +375,9 @@ impl NonAbsentCommitVotes {
 pub type ProdVotingPowerCalculator =
     ProvidedVotingPowerCalculator<tendermint::crypto::default::signature::Verifier>;
 
-impl<V: signature::Verifier> VotingPowerCalculator for ProvidedVotingPowerCalculator<V> {
+impl<V: signature::Verifier + Send + Sync> VotingPowerCalculator
+    for ProvidedVotingPowerCalculator<V>
+{
     fn voting_power_in(
         &self,
         signed_header: &SignedHeader,
@@ -376,7 +385,8 @@ impl<V: signature::Verifier> VotingPowerCalculator for ProvidedVotingPowerCalcul
         trust_threshold: TrustThreshold,
     ) -> Result<VotingPowerTally, VerificationError> {
         let mut votes = NonAbsentCommitVotes::new(signed_header)?;
-        voting_power_in_impl::<V>(
+        voting_power_in_impl(
+            &self.verifier,
             &mut votes,
             validator_set,
             trust_threshold,
@@ -391,13 +401,15 @@ impl<V: signature::Verifier> VotingPowerCalculator for ProvidedVotingPowerCalcul
         second_set: (&ValidatorSet, TrustThreshold),
     ) -> Result<(VotingPowerTally, VotingPowerTally), VerificationError> {
         let mut votes = NonAbsentCommitVotes::new(signed_header)?;
-        let first_tally = voting_power_in_impl::<V>(
+        let first_tally = voting_power_in_impl(
+            &self.verifier,
             &mut votes,
             first_set.0,
             first_set.1,
             self.total_power_of(first_set.0),
         )?;
-        let second_tally = voting_power_in_impl::<V>(
+        let second_tally = voting_power_in_impl(
+            &self.verifier,
             &mut votes,
             second_set.0,
             second_set.1,
@@ -408,6 +420,7 @@ impl<V: signature::Verifier> VotingPowerCalculator for ProvidedVotingPowerCalcul
 }
 
 fn voting_power_in_impl<V: signature::Verifier>(
+    verifier: &V,
     votes: &mut NonAbsentCommitVotes,
     validator_set: &ValidatorSet,
     trust_threshold: TrustThreshold,
@@ -417,7 +430,7 @@ fn voting_power_in_impl<V: signature::Verifier>(
     let mut seen_vals = Vec::new();
 
     for validator in validator_set.validators() {
-        if let Some(idx) = votes.has_voted::<V>(validator)? {
+        if let Some(idx) = votes.has_voted(validator, verifier)? {
             // Check if this validator has already voted.
             //
             // O(n) complexity.

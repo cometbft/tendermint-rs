@@ -18,6 +18,7 @@ struct SubstrateSignatureVerifier;
 
 impl Verifier for SubstrateSignatureVerifier {
     fn verify(
+        &self,
         pubkey: PublicKey,
         msg: &[u8],
         signature: &Signature,
@@ -74,6 +75,7 @@ mod tests {
         let sig_bytes = hex::decode(SIGNATURE.as_bytes()).unwrap();
         let signature = Signature::try_from(&sig_bytes[..]).unwrap();
 
-        SubstrateSignatureVerifier::verify(public_key, MESSAGE, &signature).unwrap();
+        let verifier = SubstrateSignatureVerifier;
+        verifier.verify(public_key, MESSAGE, &signature).unwrap();
     }
 }
