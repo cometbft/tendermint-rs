@@ -4,10 +4,11 @@ use super::super::types::Snapshot;
 use crate::prelude::*;
 
 #[doc = include_str!("../doc/response-offersnapshot.md")]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 #[repr(i32)]
 pub enum OfferSnapshot {
     /// Unknown result, abort all snapshot restoration
+    #[default]
     Unknown = 0,
     /// Snapshot accepted, apply chunks
     Accept = 1,
@@ -19,12 +20,6 @@ pub enum OfferSnapshot {
     RejectFormat = 4,
     /// Reject all snapshots from the sender(s), try others
     RejectSender = 5,
-}
-
-impl Default for OfferSnapshot {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 // =============================================================================

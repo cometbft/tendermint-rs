@@ -19,10 +19,11 @@ pub struct ApplySnapshotChunk {
 }
 
 /// The result of applying a snapshot chunk.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 #[repr(i32)]
 pub enum ApplySnapshotChunkResult {
     /// Unknown result, abort all snapshot restoration.
+    #[default]
     Unknown = 0,
     /// The chunk was accepted.
     Accept = 1,
@@ -38,12 +39,6 @@ pub enum ApplySnapshotChunkResult {
     RetrySnapshot = 4,
     /// Reject this snapshot, try a different one.
     RejectSnapshot = 5,
-}
-
-impl Default for ApplySnapshotChunkResult {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 // =============================================================================

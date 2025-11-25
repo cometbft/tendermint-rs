@@ -245,7 +245,7 @@ impl AppHash {
 
     /// Decode a `Hash` from upper-case hexadecimal
     pub fn from_hex_upper(s: &str) -> Result<Self, Error> {
-        if s.len() % 2 != 0 {
+        if !s.len().is_multiple_of(2) {
             return Err(Error::invalid_app_hash_length());
         }
         let mut h = vec![0; s.len() / 2];

@@ -12,6 +12,7 @@
     html_logo_url = "https://raw.githubusercontent.com/informalsystems/tendermint-rs/master/img/logo-tendermint-rs_3961x4001.png"
 )]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![allow(clippy::result_large_err)]
 
 //! See the `light_client` module for the main documentation.
 

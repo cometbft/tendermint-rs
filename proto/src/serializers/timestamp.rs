@@ -107,7 +107,7 @@ pub fn fmt_as_rfc3339_nanos(t: OffsetDateTime, f: &mut impl fmt::Write) -> fmt::
     } else {
         let mut secfrac = nanos;
         let mut secfrac_width = 9;
-        while secfrac % 10 == 0 {
+        while secfrac.is_multiple_of(10) {
             secfrac /= 10;
             secfrac_width -= 1;
         }
