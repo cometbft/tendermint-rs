@@ -128,6 +128,21 @@ where
     }
 
     /// Set the given light block as the initial trusted state.
+    ///
+    /// The block is validated before being inserted into the light store. If validation fails,
+    /// the block is not added to the store and an error is returned.
+    ///
+    /// # Validation checks
+    ///
+    /// The block must pass the following checks:
+    /// - The block header must be within the trusting period
+    /// - The block header time must be in the past (accounting for clock drift)
+    /// - The validator set must match the header's validators hash
+    /// - The next validator set must match the header's next validators hash
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if validation fails. The light store remains unchanged in this case.
     pub fn trust_light_block(
         mut self,
         trusted_state: LightBlock,
@@ -176,6 +191,17 @@ where
         self.trust_light_block(trusted_state)
     }
 
+    /// Validates a light block before it can be trusted.
+    ///
+    /// Performs the following checks:
+    /// - Verifies the block header is within the trusting period
+    /// - Verifies the block header time is in the past (accounting for clock drift)
+    /// - Verifies the validator set matches the header's validators hash
+    /// - Verifies the next validator set matches the header's next validators hash
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if any validation check fails.
     fn validate(&self, light_block: &LightBlock) -> Result<(), Error> {
         let header = &light_block.signed_header.header;
         let now = self.clock.now();
