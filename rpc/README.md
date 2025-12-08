@@ -105,7 +105,7 @@ traits.
 ## Testing
 
 The RPC types are directly tested through the [integration
-tests](./tests/integration.rs). These tests use fixtures taken from running
+tests](../tools/kvstore-test/tests/tendermint.rs). These tests use fixtures taken from running
 Tendermint nodes to ensure compatibility without needing access to a running
 node during testing. All of these fixtures were generated manually, and
 automatic regeneration of the fixtures is [on our roadmap][autogen-fixtures].
@@ -118,7 +118,7 @@ cargo test --all-features
 ```
 
 The RPC client is also indirectly tested through the [Tendermint integration
-tests](../tendermint/tests/integration.rs), which happens during
+tests](../tools/kvstore-test/tests/light-client.rs), which happens during
 [CI](../.github/workflows/test.yml). All of these tests require a running
 Tendermint node, and are therefore ignored by default. To run these tests
 locally:
