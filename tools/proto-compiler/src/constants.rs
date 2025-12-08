@@ -27,9 +27,9 @@ pub const TENDERMINT_VERSIONS: &[TendermintVersion] = &[
         commitish: "v0.37.11",
     },
     TendermintVersion {
-        repo: "https://github.com/cometbft/cometbft",
+        repo: "https://github.com/rach-id/cometbft",
         ident: "v0_38",
-        commitish: "v0.38.12",
+        commitish: "d503f6dec0f41c8524bb25025bb6b2f2d9def1ce",
     },
 ];
 

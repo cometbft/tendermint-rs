@@ -69,8 +69,26 @@ pub struct PingRequest {}
 pub struct PingResponse {}
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SignRawBytesRequest {
+    #[prost(string, tag = "1")]
+    pub chain_id: ::prost::alloc::string::String,
+    #[prost(bytes = "vec", tag = "2")]
+    pub raw_bytes: ::prost::alloc::vec::Vec<u8>,
+    #[prost(string, tag = "3")]
+    pub unique_id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SignedRawBytesResponse {
+    #[prost(bytes = "vec", tag = "1")]
+    pub signature: ::prost::alloc::vec::Vec<u8>,
+    #[prost(message, optional, tag = "2")]
+    pub error: ::core::option::Option<RemoteSignerError>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Message {
-    #[prost(oneof = "message::Sum", tags = "1, 2, 3, 4, 5, 6, 7, 8")]
+    #[prost(oneof = "message::Sum", tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10")]
     pub sum: ::core::option::Option<message::Sum>,
 }
 /// Nested message and enum types in `Message`.
@@ -94,6 +112,10 @@ pub mod message {
         PingRequest(super::PingRequest),
         #[prost(message, tag = "8")]
         PingResponse(super::PingResponse),
+        #[prost(message, tag = "9")]
+        SignRawBytesRequest(super::SignRawBytesRequest),
+        #[prost(message, tag = "10")]
+        SignedRawBytesResponse(super::SignedRawBytesResponse),
     }
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
