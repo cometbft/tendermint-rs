@@ -2,6 +2,8 @@
 
 ## v0.40.4
 
+- `[tendermint]` Implement PartialEq<u64> for `Height`. ([\#1507](https://github.com/cometbft/tendermint-rs/issues/1507))
+
 *May 5th, 2025*
 
 ### BUG FIXES
