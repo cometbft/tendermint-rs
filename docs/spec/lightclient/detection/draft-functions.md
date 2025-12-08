@@ -1,4 +1,4 @@
-# Draft of Functions for Fork detection and Proof of Fork Submisstion
+# Draft of Functions for Fork detection and Proof of Fork Submission
 
 
 ## Disclaimer
