@@ -24,7 +24,7 @@ pub trait CommitValidator: Send + Sync {
             return Err(VerificationError::no_signature_for_commit());
         }
 
-        // Check that that the number of signatures matches the number of validators.
+        // Check that the number of signatures matches the number of validators.
         if signatures.len() != validator_set.validators().len() {
             return Err(VerificationError::mismatch_pre_commit_length(
                 signatures.len(),
