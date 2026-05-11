@@ -66,6 +66,59 @@ impl From<u8> for Height {
     }
 }
 
+// Allow comparing a `Height` directly to unsigned integer types without going
+// through `.value()`. `Height` is a newtype around `u64`, so equality reduces
+// to the inner value comparison. Both directions are provided so `height == 5`
+// and `5 == height` work, which matters in generic code and assertions.
+
+impl PartialEq<u64> for Height {
+    fn eq(&self, other: &u64) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<Height> for u64 {
+    fn eq(&self, other: &Height) -> bool {
+        *self == other.0
+    }
+}
+
+impl PartialEq<u32> for Height {
+    fn eq(&self, other: &u32) -> bool {
+        self.0 == u64::from(*other)
+    }
+}
+
+impl PartialEq<Height> for u32 {
+    fn eq(&self, other: &Height) -> bool {
+        u64::from(*self) == other.0
+    }
+}
+
+impl PartialEq<u16> for Height {
+    fn eq(&self, other: &u16) -> bool {
+        self.0 == u64::from(*other)
+    }
+}
+
+impl PartialEq<Height> for u16 {
+    fn eq(&self, other: &Height) -> bool {
+        u64::from(*self) == other.0
+    }
+}
+
+impl PartialEq<u8> for Height {
+    fn eq(&self, other: &u8) -> bool {
+        self.0 == u64::from(*other)
+    }
+}
+
+impl PartialEq<Height> for u8 {
+    fn eq(&self, other: &Height) -> bool {
+        u64::from(*self) == other.0
+    }
+}
+
 impl Height {
     /// Get inner integer value. Alternative to `.0` or `.into()`
     pub fn value(&self) -> u64 {
@@ -141,5 +194,34 @@ mod tests {
             Height::try_from(2_u64).unwrap().value(),
             Height::from(2_u32).value()
         );
+    }
+
+    #[test]
+    fn partial_eq_with_u64() {
+        let h = Height::try_from(42_u64).unwrap();
+        assert!(h == 42_u64);
+        assert!(42_u64 == h);
+        assert!(h != 43_u64);
+        assert!(43_u64 != h);
+    }
+
+    #[test]
+    fn partial_eq_with_smaller_uints() {
+        let h = Height::try_from(7_u64).unwrap();
+        assert!(h == 7_u32);
+        assert!(7_u32 == h);
+        assert!(h == 7_u16);
+        assert!(7_u16 == h);
+        assert!(h == 7_u8);
+        assert!(7_u8 == h);
+    }
+
+    #[test]
+    fn partial_eq_no_truncation() {
+        // A Height larger than u32::MAX must compare unequal to any u32 value,
+        // including u32::MAX itself, rather than wrapping/truncating.
+        let h = Height::try_from(u64::from(u32::MAX) + 1).unwrap();
+        assert!(h != u32::MAX);
+        assert!(u32::MAX != h);
     }
 }
