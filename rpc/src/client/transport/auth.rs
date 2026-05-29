@@ -33,7 +33,7 @@ impl fmt::Display for Authorization {
 /// This authorization can then be supplied to the RPC server via
 /// the `Authorization` HTTP header.
 pub fn authorize(url: &Url) -> Option<Authorization> {
-    if url.username().is_empty() {
+    if url.username().is_empty() && url.password().is_none() {
         None
     } else {
         let bytes = base64::encode(basic_auth_credentials(url));
@@ -81,6 +81,13 @@ mod tests {
     fn extract_auth_username_password() {
         let uri = "http://toto:tata@example.com".parse().unwrap();
         let base64 = "dG90bzp0YXRh".to_string();
+        assert_eq!(authorize(&uri), Some(Authorization::Basic(base64)));
+    }
+
+    #[test]
+    fn extract_auth_password_only() {
+        let uri = "http://:tata@example.com".parse().unwrap();
+        let base64 = "OnRhdGE=".to_string();
         assert_eq!(authorize(&uri), Some(Authorization::Basic(base64)));
     }
 
