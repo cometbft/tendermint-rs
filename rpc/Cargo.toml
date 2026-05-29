@@ -81,6 +81,7 @@ time = { version = "0.3", default-features = false, features = ["macros", "parsi
 uuid = { version = "1.7", default-features = false }
 rand = { version = "0.8" }
 subtle-encoding = { version = "0.5", default-features = false, features = ["bech32-preview"] }
+percent-encoding = { version = "2.3", default-features = false, features = ["alloc"] }
 url = { version = "2.4.1", default-features = false }
 walkdir = { version = "2.3", default-features = false }
 flex-error = { version = "0.4.4", default-features = false }
