@@ -149,6 +149,7 @@ impl FromStr for Method {
             "consensus_params" => Method::ConsensusParams,
             "consensus_state" => Method::ConsensusState,
             "genesis" => Method::Genesis,
+            "genesis_chunked" => Method::GenesisChunked,
             "health" => Method::Health,
             "net_info" => Method::NetInfo,
             "status" => Method::Status,
