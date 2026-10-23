@@ -17,7 +17,7 @@ description = """
 default = []
 std = []
 grpc = ["grpc-server"]
-grpc-server = ["dep:tonic", "std"]
+grpc-server = ["dep:tonic", "dep:tonic-prost", "std"]
 json-schema = ["dep:schemars", "std"]
 borsh = ["dep:borsh"]
 parity-scale-codec = ["dep:parity-scale-codec", "dep:scale-info"]
@@ -26,14 +26,15 @@ parity-scale-codec = ["dep:parity-scale-codec", "dep:scale-info"]
 all-features = true
 
 [dependencies]
-prost = { version = "0.13", default-features = false, features = ["derive"] }
+prost = { version = "0.14", default-features = false, features = ["derive"] }
 bytes = { version = "1.0", default-features = false, features = ["serde"]}
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_bytes = { version = "0.11", default-features = false, features = ["alloc"] }
 subtle-encoding = { version = "0.5", default-features = false, features = ["hex", "base64", "alloc"] }
 time = { version = "0.3", default-features = false, features = ["macros", "parsing"] }
 flex-error = { version = "0.4.4", default-features = false }
-tonic = { version = "0.12", optional = true }
+tonic = { version = "0.14", optional = true }
+tonic-prost = { version = "0.14", optional = true }
 
 ## Optional: enabled by the `json-schema` feature
 schemars = { version = "0.8", optional = true }
