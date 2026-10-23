@@ -46,6 +46,7 @@ cli = [
 http-client = [
   "futures",
   "reqwest",
+  "rustls",
   "rustls-webpki",
   "tokio/macros",
   "tracing"
@@ -96,7 +97,7 @@ semver = { version = "1.0", default-features = false }
 # Optional dependencies
 async-tungstenite = { version = "0.28", default-features = false, features = ["tokio-runtime", "tokio-rustls-native-certs"], optional = true }
 futures = { version = "0.3", optional = true, default-features = false }
-reqwest = { version = "0.12", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
+reqwest = { version = "0.12.5", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
 # Provides the `ring` crypto provider for rustls 0.23, which `async-tungstenite` does not enable on its own.
 # The websocket client uses it for secure connections unless the application installed a default provider.
 rustls = { version = "0.23.46", optional = true, default-features = false, features = ["ring", "std", "tls12"] }
