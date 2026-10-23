@@ -1,6 +1,6 @@
 [package]
 name       = "tendermint-std-ext"
-version    = "0.40.4"
+version    = "0.41.0"
 edition    = "2021"
 rust-version = "1.82"
 license    = "Apache-2.0"

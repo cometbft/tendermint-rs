@@ -1,6 +1,6 @@
 [package]
 name        = "tendermint-pbt-gen"
-version     = "0.40.4"
+version     = "0.41.0"
 authors     = ["Informal Systems <hello@informal.systems>"]
 edition     = "2021"
 rust-version = "1.82"
