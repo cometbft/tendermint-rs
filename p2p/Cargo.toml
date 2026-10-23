@@ -49,4 +49,4 @@ tendermint-proto = { path = "../proto", version = "0.40.4", default-features = f
 tendermint-std-ext = { path = "../std-ext", version = "0.40.4", default-features = false }
 
 # optional dependencies
-prost-derive = { version = "0.14", optional = true }
+prost-derive = { version = "0.14.3", optional = true }
