@@ -17,7 +17,11 @@ description = """
 all-features = true
 
 [dependencies]
-async-tungstenite = { version = "0.17", features = [ "tokio-runtime", "tokio-rustls-native-certs" ] }
+async-tungstenite = { version = "0.26", features = [ "tokio-runtime", "tokio-rustls-native-certs" ] }
+# Selects the crypto provider used by `async-tungstenite`'s rustls connector
+rustls = { version = "0.23", default-features = false, features = [ "ring", "std", "tls12" ] }
+# Not used directly; sets the minimum version for rustls' certificate verifier
+rustls-webpki = { version = "0.103.16", default-features = false }
 futures = "0.3"
 getrandom = "0.2"
 log = "0.4"
