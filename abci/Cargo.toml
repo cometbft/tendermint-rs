@@ -33,8 +33,8 @@ binary = [
 
 [dependencies]
 bytes = { version = "1.0", default-features = false }
-prost = { version = "0.13", default-features = false }
-tendermint-proto = { version = "0.40.4", default-features = false, path = "../proto" }
+prost = { version = "0.14.3", default-features = false }
+tendermint-proto = { version = "0.41.0", default-features = false, path = "../proto" }
 tracing = { version = "0.1", default-features = false }
 flex-error = { version = "0.4.4", default-features = false }
 structopt = { version = "0.3", optional = true, default-features = false }
