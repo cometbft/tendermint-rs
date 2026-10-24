@@ -123,7 +123,7 @@ fn main() {
         pb.extern_path(".google.protobuf.Any", "crate::google::protobuf::Any");
 
         println!("[info] => Creating structs and interfaces.");
-        let builder = tonic_build::configure()
+        let builder = tonic_prost_build::configure()
             .out_dir(&out_dir)
             .build_server(true)
             .build_client(false)

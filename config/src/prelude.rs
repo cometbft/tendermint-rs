@@ -6,4 +6,3 @@ pub use alloc::{
     vec,
     vec::Vec,
 };
-pub use core::prelude::v1::*;

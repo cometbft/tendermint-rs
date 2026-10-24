@@ -1,5 +1,17 @@
 [advisories]
-ignore = []
+# Only advisories without a fixed version are ignored. Each was checked against
+# RustSec and OSV (GHSA/CVE): no high or critical vulnerability affects the locked
+# version or its dependencies.
+ignore = [
+    # Unmaintained crates with no patched release and no known vulnerability:
+    "RUSTSEC-2025-0057", # fxhash, via sled (light-client `lightstore-sled` feature)
+    "RUSTSEC-2024-0384", # instant, via sled (light-client `lightstore-sled` feature)
+    "RUSTSEC-2026-0214", # gumdrop, testgen CLI
+    "RUSTSEC-2024-0436", # paste, build-time proc macro used by flex-error
+    "RUSTSEC-2024-0370", # proc-macro-error, build-time dependency of structopt
+    "RUSTSEC-2021-0127", # serde_cbor, light-client store serialization
+    "RUSTSEC-2022-0104", # structopt, abci and rpc CLI binaries
+]
 informational_warnings = ["unmaintained"]
 severity_threshold = "low"
 
