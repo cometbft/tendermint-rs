@@ -12,7 +12,7 @@ use async_tungstenite::{
     },
     WebSocketStream,
 };
-use futures::{SinkExt, StreamExt};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use tokio::time::{Duration, Instant};
 use tracing::{debug, error};
