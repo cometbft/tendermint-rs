@@ -3,7 +3,7 @@
 #![cfg(all(feature = "secp256k1", feature = "rust-crypto"))]
 
 use ::signature::DigestVerifier;
-use digest::Digest;
+use k256::sha2::Digest;
 
 use tendermint::crypto::signature::{self, Verifier};
 use tendermint::crypto::{sha256::HASH_SIZE, Sha256};
@@ -27,10 +27,14 @@ impl Verifier for SubstrateSignatureVerifier {
             PublicKey::Secp256k1(pk) => {
                 let sig = k256::ecdsa::Signature::try_from(signature.as_bytes())
                     .map_err(|_| signature::Error::MalformedSignature)?;
-                let mut hasher = sha2::Sha256::new();
-                Digest::update(&mut hasher, msg);
-                pk.verify_digest(hasher, &sig)
-                    .map_err(|_| signature::Error::VerificationFailed)
+                pk.verify_digest(
+                    |hasher: &mut k256::sha2::Sha256| {
+                        Digest::update(hasher, msg);
+                        Ok(())
+                    },
+                    &sig,
+                )
+                .map_err(|_| signature::Error::VerificationFailed)
             },
             _ => Err(signature::Error::UnsupportedKeyType),
         }
