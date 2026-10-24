@@ -33,6 +33,11 @@ verifiers. See the breaking changes below for details.
   The re-exported secp256k1 types (`public_key::Secp256k1`, `signature::Secp256k1Signature`,
   `private_key::Secp256k1` and `crypto::default::ecdsa_secp256k1`) now come from `k256` v0.14.
   ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
+- `[tendermint-proto]`: Update `prost` to v0.14 and `tonic` to v0.14.
+  The `grpc-server` feature now also depends on `tonic-prost`.
+  Generated message types now derive `Eq` and `Hash` where possible,
+  and `google::protobuf::Duration` now implements `Hash`
+  ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
 
 ### SECURITY
 
