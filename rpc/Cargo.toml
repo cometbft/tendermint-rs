@@ -1,6 +1,6 @@
 [package]
 name       = "tendermint-rpc"
-version    = "0.40.4"
+version    = "0.41.0"
 edition    = "2021"
 license    = "Apache-2.0"
 homepage   = "https://www.tendermint.com/"
@@ -45,12 +45,15 @@ cli = [
 http-client = [
   "futures",
   "reqwest",
+  "rustls",
+  "rustls-webpki",
   "tokio/macros",
   "tracing"
 ]
 websocket-client = [
   "async-tungstenite",
   "rustls",
+  "rustls-webpki",
   "futures",
   "tokio/rt-multi-thread",
   "tokio/macros",
@@ -65,9 +68,9 @@ mock-client = [
 ]
 
 [dependencies]
-tendermint = { version = "0.40.4", default-features = false, path = "../tendermint" }
-tendermint-config = { version = "0.40.4", path = "../config", default-features = false }
-tendermint-proto = { version = "0.40.4", path = "../proto", default-features = false }
+tendermint = { version = "0.41.0", default-features = false, path = "../tendermint" }
+tendermint-config = { version = "0.41.0", path = "../config", default-features = false }
+tendermint-proto = { version = "0.41.0", path = "../proto", default-features = false }
 
 async-trait = { version = "0.1", default-features = false }
 bytes = { version = "1.0", default-features = false }
@@ -91,16 +94,18 @@ semver = { version = "1.0", default-features = false }
 # Optional dependencies
 async-tungstenite = { version = "0.28", default-features = false, features = ["tokio-runtime", "tokio-rustls-native-certs"], optional = true }
 futures = { version = "0.3", optional = true, default-features = false }
-reqwest = { version = "0.12", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
+reqwest = { version = "0.12.5", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
 # Selects the `ring` crypto provider for rustls 0.23, which `async-tungstenite` does not enable on its own
 rustls = { version = "0.23.46", optional = true, default-features = false, features = ["ring", "std", "tls12"] }
+# Not used directly; sets the minimum version for rustls' certificate verifier
+rustls-webpki = { version = "0.103.16", optional = true, default-features = false }
 structopt = { version = "0.3", optional = true, default-features = false }
 tokio = { version = "1.0", optional = true, default-features = false, features = ["rt-multi-thread"] }
 tracing = { version = "0.1", optional = true, default-features = false }
 tracing-subscriber = { version = "0.3", optional = true, default-features = false, features = ["fmt"] }
 
 [dev-dependencies]
-tendermint = { version = "0.40.4", default-features = false, path = "../tendermint", features = ["secp256k1"] }
+tendermint = { version = "0.41.0", default-features = false, path = "../tendermint", features = ["secp256k1"] }
 http = { version = "1", default-features = false, features = ["std"] }
 lazy_static = { version = "1.4.0", default-features = false }
 tokio-test = { version = "0.4", default-features = false }
