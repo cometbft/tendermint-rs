@@ -1,5 +1,57 @@
 # CHANGELOG
 
+## v0.41.0
+
+*October 23rd, 2026*
+
+This release updates the TLS stack used by the `tendermint-rpc` HTTP and
+WebSocket clients to `rustls` 0.23, with `rustls-webpki` 0.103.16 or later,
+so that certificate chains through distrusted CA keys are rejected. All users
+of the RPC clients are advised to update.
+
+It also makes `Verifier::verify` take `&self`, allowing stateful signature
+verifiers. See the breaking changes below for details.
+
+### BREAKING CHANGES
+
+- `[tendermint]` The `Verifier::verify` method now
+  takes `&self`, allowing stateful signature verifiers
+  ([#1511](https://github.com/informalsystems/tendermint-rs/issues/1511))
+- `[tendermint-rpc]`: Update `reqwest` to v0.12 and `async-tungstenite` to v0.28
+  to pull in patched versions of `h2`, `rustls` and `rustls-webpki`
+  (RUSTSEC-2026-0258, RUSTSEC-2026-0346, RUSTSEC-2026-0349, RUSTSEC-2026-0049,
+  RUSTSEC-2026-0098, RUSTSEC-2026-0099, RUSTSEC-2026-0104, RUSTSEC-2026-0382).
+  `HttpClient::builder().client(...)` and `HttpClient::new_from_parts` now take a
+  `reqwest` v0.12 `Client`, and the re-exported `WebSocketConfig` comes from `tungstenite` v0.24.
+  The `websocket-client` feature now enables the `ring` crypto provider for `rustls`.
+  ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
+- `[tendermint-light-client-js]`: Relax the `js-sys` pin from `=0.3.70` to `0.3.70`
+  so that `reqwest` can resolve to a version without the vulnerable `quinn-proto`.
+  ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
+- `[tendermint]`: Update `k256` to v0.14 and `signature` to v3
+  to pull in a patched version of `crypto-bigint` (RUSTSEC-2026-0387).
+  The re-exported secp256k1 types (`public_key::Secp256k1`, `signature::Secp256k1Signature`,
+  `private_key::Secp256k1` and `crypto::default::ecdsa_secp256k1`) now come from `k256` v0.14.
+  The `signature` dependency is now only pulled in by the `secp256k1` feature.
+  Enabling the `secp256k1` feature now requires Rust 1.87 (required by the patched
+  `crypto-bigint` v0.7.6+ pulled in through `k256` v0.14).
+  ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
+- `[tendermint-proto]`: Update `prost` to v0.14 and `tonic` to v0.14.
+  The `grpc-server` feature now also depends on `tonic-prost`.
+  Generated message types now derive `Eq` and `Hash` where possible,
+  and `google::protobuf::Duration` now implements `Hash`.
+  The minimum supported Rust version for all crates is now 1.82 (required by `prost` v0.14),
+  and is now declared via `rust-version` in each crate's manifest.
+  ([\#1522](https://github.com/cometbft/tendermint-rs/pull/1522))
+
+### SECURITY
+
+- `[tendermint-rpc]` Update the HTTP and WebSocket clients to `rustls` 0.23.46
+  or later (and `reqwest` 0.12.5 or later), and require `rustls-webpki`
+  0.103.16 or later, which rejects certificate chains through the eMudhra
+  intermediate CA keys distrusted by `rustls-webpki`
+  ([\#1521](https://github.com/cometbft/tendermint-rs/pull/1521))
+
 ## v0.40.4
 
 *May 5th, 2025*
