@@ -3,6 +3,7 @@ name       = "tendermint-proto"
 version    = "0.40.4"
 authors    = ["Informal Systems <hello@informal.systems>"]
 edition    = "2021"
+rust-version = "1.82"
 license    = "Apache-2.0"
 repository = "https://github.com/informalsystems/tendermint-rs/tree/main/proto"
 readme     = "README.md"

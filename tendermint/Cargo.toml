@@ -8,6 +8,7 @@ readme     = "../README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies", "database"]
 keywords   = ["blockchain", "bft", "consensus", "cosmos", "tendermint"]
 edition    = "2021"
+rust-version = "1.82"
 
 description = """
     Tendermint is a high-performance blockchain consensus engine that powers

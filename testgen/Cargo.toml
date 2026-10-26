@@ -3,6 +3,7 @@ name        = "tendermint-testgen"
 version     = "0.40.4"
 authors     = ["Informal Systems <hello@informal.systems>"]
 edition     = "2021"
+rust-version = "1.82"
 readme      = "README.md"
 license     = "Apache-2.0"
 homepage    = "https://www.tendermint.com/"

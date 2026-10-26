@@ -8,6 +8,7 @@ readme     = "../README.md"
 categories = ["cryptography", "cryptography::cryptocurrencies", "database"]
 keywords   = ["blockchain", "bft", "consensus", "cosmos", "tendermint"]
 edition    = "2021"
+rust-version = "1.82"
 
 description = """
     tendermint-config provides functions for loading and validating Tendermint

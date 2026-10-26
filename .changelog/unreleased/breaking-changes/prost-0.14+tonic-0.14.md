@@ -2,3 +2,5 @@
   The `grpc-server` feature now also depends on `tonic-prost`.
   Generated message types now derive `Eq` and `Hash` where possible,
   and `google::protobuf::Duration` now implements `Hash`.
+  The minimum supported Rust version for all crates is now 1.82 (required by `prost` v0.14),
+  and is now declared via `rust-version` in each crate's manifest.
