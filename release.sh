@@ -7,13 +7,16 @@
 # It has a default set of crates it will publish, which can be overridden by
 # way of command line arguments:
 #
-#   # Release all packages, prompting for each package as to whether to publish
+#   # Release all packages
 #   ./release.sh
 #
 #   # Just release the proto and tendermint crates, but nothing else
-#   ./release.sh proto tendermint
+#   ./release.sh tendermint-proto tendermint
+#
+# The script is idempotent: crate versions that have already been published
+# are skipped, so it can simply be rerun if publishing fails partway through.
 
-set -e
+set -eo pipefail
 
 # A space-separated list of all the crates we want to publish, in the order in
 # which they must be published. It's important to respect this order, since
@@ -34,6 +37,7 @@ DEFAULT_CRATES="tendermint-proto \
 
 # Allows us to override the crates we want to publish.
 CRATES=${*:-${DEFAULT_CRATES}}
+CRATES_IO_USER_AGENT="${GITHUB_REPOSITORY} (${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY})"
 
 # Additional flags to pass to the "cargo publish" operation for every crate we
 # publish.
@@ -54,12 +58,34 @@ get_local_version() {
 }
 
 check_version_online() {
-  curl -s "https://crates.io/api/v1/crates/${1}" | jq -r 'try .versions[]|select(.num == "'"${2}"'").updated_at'
+  local response status
+  response="$(curl -sS -A "${CRATES_IO_USER_AGENT}" -w '\n%{http_code}' "https://crates.io/api/v1/crates/${1}/${2}")"
+  status="${response##*$'\n'}"
+  case "${status}" in
+    200) printf '%s' "${response%$'\n'*}" | jq -r '.version.created_at' ;;
+    404) ;;
+    *)
+      echo "ERROR: crates.io returned HTTP ${status} when checking ${1} ${2}" >&2
+      exit 1
+      ;;
+  esac
 }
 
 publish() {
+  local log
+  log="$(mktemp)"
   echo "Publishing crate $1..."
-  cargo publish --manifest-path "$(get_manifest_path "${1}")" ${CARGO_PUBLISH_FLAGS}
+  if ! cargo publish --manifest-path "$(get_manifest_path "${1}")" ${CARGO_PUBLISH_FLAGS} 2>&1 | tee "${log}"; then
+    # The crates.io API can lag behind the index, so check_version_online may
+    # miss a version that has already been published (e.g. by a previous run).
+    if grep -qE "already (exists|uploaded)" "${log}"; then
+      echo "${1} has already been published, skipping"
+    else
+      rm -f "${log}"
+      exit 1
+    fi
+  fi
+  rm -f "${log}"
   echo ""
 }
 
@@ -88,6 +114,10 @@ echo "Attempting to publish crate(s): ${CRATES}"
 
 for crate in ${CRATES}; do
   VERSION="$(get_local_version "${crate}")"
+  if [ -z "${VERSION}" ]; then
+    echo "ERROR: crate ${crate} not found in this workspace" >&2
+    exit 1
+  fi
   ONLINE_DATE="$(check_version_online "${crate}" "${VERSION}")"
   echo "${crate} version number: ${VERSION}"
   if [ -n "${ONLINE_DATE}" ]; then
