@@ -2,6 +2,7 @@
 name       = "tendermint-light-client-detector"
 version    = "0.40.4"
 edition    = "2021"
+rust-version = "1.82"
 license    = "Apache-2.0"
 readme     = "README.md"
 keywords   = ["blockchain", "bft", "consensus", "cosmos", "tendermint"]

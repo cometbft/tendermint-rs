@@ -12,7 +12,7 @@ use async_tungstenite::{
     },
     WebSocketStream,
 };
-use futures::{SinkExt, StreamExt};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use tokio::time::{Duration, Instant};
 use tracing::{debug, error};
@@ -527,10 +527,9 @@ mod sealed {
         ) -> Result<(Self, WebSocketClientDriver), Error> {
             debug!("Connecting to secure WebSocket endpoint: {}", url);
 
-            // Not supplying a connector means async_tungstenite will create the
-            // connector for us.
+            let connector = tls_connector()?;
             let (stream, _response) =
-                connect_async_with_tls_connector_and_config(url, None, config)
+                connect_async_with_tls_connector_and_config(url, Some(connector), config)
                     .await
                     .map_err(Error::tungstenite)?;
 
@@ -554,6 +553,45 @@ mod sealed {
         pub fn close(self) -> Result<(), Error> {
             self.send_cmd(DriverCommand::Terminate)
         }
+    }
+
+    /// Builds the TLS connector for secure WebSocket connections.
+    ///
+    /// This is the connector `async_tungstenite` would otherwise build itself,
+    /// except that the rustls crypto provider is selected explicitly: the
+    /// application's process-level default if one is installed, `ring`
+    /// otherwise. Leaving the choice to rustls panics when both its `ring` and
+    /// `aws-lc-rs` features are enabled in the dependency graph, and this avoids
+    /// installing a process-level default on the application's behalf.
+    fn tls_connector() -> Result<tokio_rustls::TlsConnector, Error> {
+        use rustls::{crypto::CryptoProvider, ClientConfig, RootCertStore};
+        use std::{io, sync::Arc};
+
+        let io_error = |e: Box<dyn std::error::Error + Send + Sync>| {
+            Error::tungstenite(async_tungstenite::tungstenite::Error::Io(io::Error::other(
+                e,
+            )))
+        };
+
+        let native_certs = rustls_native_certs::load_native_certs();
+        if let Some(err) = native_certs.errors.into_iter().next() {
+            return Err(io_error(err.into()));
+        }
+        let total = native_certs.certs.len();
+        let mut root_store = RootCertStore::empty();
+        let (added, ignored) = root_store.add_parsable_certificates(native_certs.certs);
+        debug!("Added {added}/{total} native root certificates (ignored {ignored})");
+
+        let provider = CryptoProvider::get_default()
+            .cloned()
+            .unwrap_or_else(|| Arc::new(rustls::crypto::ring::default_provider()));
+        let config = ClientConfig::builder_with_provider(provider)
+            .with_safe_default_protocol_versions()
+            .map_err(|e| io_error(e.into()))?
+            .with_root_certificates(root_store)
+            .with_no_client_auth();
+
+        Ok(tokio_rustls::TlsConnector::from(Arc::new(config)))
     }
 
     impl<C> AsyncTungsteniteClient<C> {

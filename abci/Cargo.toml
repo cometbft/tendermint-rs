@@ -3,6 +3,7 @@ name        = "tendermint-abci"
 version     = "0.40.4"
 authors     = ["Informal Systems <hello@informal.systems>"]
 edition     = "2021"
+rust-version = "1.82"
 license     = "Apache-2.0"
 readme      = "README.md"
 categories  = ["cryptography::cryptocurrencies", "network-programming"]
@@ -32,7 +33,7 @@ binary = [
 
 [dependencies]
 bytes = { version = "1.0", default-features = false }
-prost = { version = "0.13", default-features = false }
+prost = { version = "0.14.3", default-features = false }
 tendermint-proto = { version = "0.40.4", default-features = false, path = "../proto" }
 tracing = { version = "0.1", default-features = false }
 flex-error = { version = "0.4.4", default-features = false }

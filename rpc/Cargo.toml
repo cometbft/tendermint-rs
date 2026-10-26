@@ -2,6 +2,7 @@
 name       = "tendermint-rpc"
 version    = "0.40.4"
 edition    = "2021"
+rust-version = "1.82"
 license    = "Apache-2.0"
 homepage   = "https://www.tendermint.com/"
 repository = "https://github.com/informalsystems/tendermint-rs"
@@ -50,6 +51,9 @@ http-client = [
 ]
 websocket-client = [
   "async-tungstenite",
+  "rustls",
+  "rustls-native-certs",
+  "tokio-rustls",
   "futures",
   "tokio/rt-multi-thread",
   "tokio/macros",
@@ -88,9 +92,16 @@ subtle = { version = "2", default-features = false }
 semver = { version = "1.0", default-features = false }
 
 # Optional dependencies
-async-tungstenite = { version = "0.24", default-features = false, features = ["tokio-runtime", "tokio-rustls-native-certs"], optional = true }
+async-tungstenite = { version = "0.28", default-features = false, features = ["tokio-runtime", "tokio-rustls-native-certs"], optional = true }
 futures = { version = "0.3", optional = true, default-features = false }
-reqwest = { version = "0.11.20", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
+reqwest = { version = "0.12", optional = true, default-features = false, features = ["rustls-tls-native-roots"] }
+# Provides the `ring` crypto provider for rustls 0.23, which `async-tungstenite` does not enable on its own.
+# The websocket client uses it for secure connections unless the application installed a default provider.
+rustls = { version = "0.23.46", optional = true, default-features = false, features = ["ring", "std", "tls12"] }
+# Used to build the websocket client's TLS connector, matching the versions `async-tungstenite` uses.
+# `tokio-rustls` default features are disabled because they would enable the `aws-lc-rs` provider.
+rustls-native-certs = { version = "0.8", optional = true }
+tokio-rustls = { version = "0.26", optional = true, default-features = false }
 structopt = { version = "0.3", optional = true, default-features = false }
 tokio = { version = "1.0", optional = true, default-features = false, features = ["rt-multi-thread"] }
 tracing = { version = "0.1", optional = true, default-features = false }

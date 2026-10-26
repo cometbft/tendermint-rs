@@ -20,7 +20,7 @@ use super::PACKAGE;
 /// or "month". It is related to Timestamp in that the difference between
 /// two Timestamp values is a Duration and it can be added or subtracted
 /// from a Timestamp. Range is approximately +-10,000 years.
-#[derive(Copy, Clone, PartialEq, Eq, ::prost::Message)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, ::prost::Message)]
 #[cfg_attr(feature = "json-schema", derive(::schemars::JsonSchema))]
 pub struct Duration {
     /// Signed seconds of the span of time. Must be from -315,576,000,000
