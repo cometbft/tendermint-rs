@@ -19,6 +19,9 @@ use crate::error::Error;
 /// we're encountering a decoding error for a varint.
 pub const MAX_VARINT_LENGTH: usize = 16;
 
+/// The maximum length of a single message, matching CometBFT's `maxMsgSize`.
+pub const MAX_MESSAGE_LENGTH: u64 = i32::MAX as u64;
+
 /// The server receives incoming requests, and sends outgoing responses.
 pub type ServerCodec<S> = Codec<S, Request, Response>;
 
@@ -140,27 +143,72 @@ pub fn decode_length_delimited<M>(src: &mut BytesMut) -> Result<Option<M>, Error
 where
     M: Message + Default,
 {
-    let src_len = src.len();
-    let mut tmp = src.clone().freeze();
+    let mut tmp = &src[..];
     let encoded_len = match prost::encoding::decode_varint(&mut tmp) {
         Ok(len) => len,
         // We've potentially only received a partial length delimiter
-        Err(_) if src_len <= MAX_VARINT_LENGTH => return Ok(None),
+        Err(_) if src.len() <= MAX_VARINT_LENGTH => return Ok(None),
         Err(e) => return Err(Error::decode(e)),
     };
-    let remaining = tmp.remaining() as u64;
-    if remaining < encoded_len {
+    if encoded_len > MAX_MESSAGE_LENGTH {
+        return Err(Error::io(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("message length {encoded_len} exceeds maximum {MAX_MESSAGE_LENGTH}"),
+        )));
+    }
+    if (tmp.len() as u64) < encoded_len {
         // We don't have enough data yet to decode the entire message
-        Ok(None)
-    } else {
-        let delim_len = src_len - tmp.remaining();
-        // We only advance the source buffer once we're sure we have enough
-        // data to try to decode the result.
-        src.advance(delim_len + (encoded_len as usize));
+        return Ok(None);
+    }
+    src.advance(src.len() - tmp.len());
+    let res = M::decode(src.split_to(encoded_len as usize)).map_err(Error::decode)?;
+    Ok(Some(res))
+}
 
-        let mut result_bytes = BytesMut::from(tmp.split_to(encoded_len as usize).as_ref());
-        let res = M::decode(&mut result_bytes).map_err(Error::decode)?;
+#[cfg(test)]
+mod tests {
+    use tendermint_proto::v0_38::abci::{request, RequestEcho};
 
-        Ok(Some(res))
+    use super::*;
+
+    fn echo(message: &str) -> Request {
+        Request {
+            value: Some(request::Value::Echo(RequestEcho {
+                message: message.to_owned(),
+            })),
+        }
+    }
+
+    #[test]
+    fn rejects_oversized_length_prefix() {
+        let mut buf = BytesMut::new();
+        prost::encoding::encode_varint(i32::MAX as u64 + 1, &mut buf);
+        assert!(decode_length_delimited::<Request>(&mut buf).is_err());
+    }
+
+    #[test]
+    fn waits_for_max_sized_message() {
+        let mut buf = BytesMut::new();
+        prost::encoding::encode_varint(i32::MAX as u64, &mut buf);
+        assert!(decode_length_delimited::<Request>(&mut buf)
+            .unwrap()
+            .is_none());
+    }
+
+    #[test]
+    fn decodes_consecutive_messages_and_partial_tail() {
+        let mut buf = BytesMut::new();
+        encode_length_delimited(echo("a"), &mut buf).unwrap();
+        encode_length_delimited(echo("b"), &mut buf).unwrap();
+        let mut partial = BytesMut::new();
+        encode_length_delimited(echo("c"), &mut partial).unwrap();
+        buf.extend_from_slice(&partial[..partial.len() - 1]);
+
+        let first = decode_length_delimited::<Request>(&mut buf).unwrap();
+        let second = decode_length_delimited::<Request>(&mut buf).unwrap();
+        assert_eq!(first, Some(echo("a")));
+        assert_eq!(second, Some(echo("b")));
+        assert_eq!(decode_length_delimited::<Request>(&mut buf).unwrap(), None);
+        assert_eq!(buf.len(), partial.len() - 1);
     }
 }
