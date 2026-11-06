@@ -1,0 +1,54 @@
+[package]
+name = "tendermint-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+bytes = "1"
+libfuzzer-sys = "0.4"
+prost = "0.14"
+tendermint = { path = "../tendermint" }
+tendermint-abci = { path = "../abci" }
+tendermint-light-client-verifier = { path = "../light-client-verifier" }
+tendermint-p2p = { path = "../p2p", features = ["amino"] }
+tendermint-proto = { path = "../proto" }
+tendermint-testgen = { path = "../testgen" }
+
+[[bin]]
+name = "abci_codec"
+path = "fuzz_targets/abci_codec.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "proto_roundtrip"
+path = "fuzz_targets/proto_roundtrip.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "time_parse"
+path = "fuzz_targets/time_parse.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "p2p_handshake"
+path = "fuzz_targets/p2p_handshake.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "verify_light_block"
+path = "fuzz_targets/verify_light_block.rs"
+test = false
+doc = false
+bench = false

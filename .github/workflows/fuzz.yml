@@ -1,0 +1,38 @@
+name: Fuzz
+on:
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+  push:
+    paths-ignore:
+      - "docs/**"
+    branches:
+      - main
+      - 'v*.*.*'
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - abci_codec
+          - p2p_handshake
+          - proto_roundtrip
+          - time_parse
+          - verify_light_block
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-fuzz
+      - run: cargo test --manifest-path fuzz/Cargo.toml --lib
+        if: matrix.target == 'verify_light_block'
+      - run: mkdir -p fuzz/corpus/${{ matrix.target }} fuzz/seeds/${{ matrix.target }}
+      - run: cargo fuzz run ${{ matrix.target }} fuzz/corpus/${{ matrix.target }} fuzz/seeds/${{ matrix.target }} -- -max_total_time=60
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fuzz-artifacts-${{ matrix.target }}
+          path: fuzz/artifacts

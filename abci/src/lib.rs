@@ -5,6 +5,9 @@
 mod application;
 #[cfg(feature = "client")]
 mod client;
+#[cfg(fuzzing)]
+pub mod codec;
+#[cfg(not(fuzzing))]
 mod codec;
 pub mod error;
 mod server;
