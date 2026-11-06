@@ -661,21 +661,11 @@ mod mbt {
         output_env.remove_file(&tla_test);
         output_env.remove_file(&json_test);
 
-        // Check for the necessary programs
-        let check_program = |program| {
-            if !Command::exists_program(program) {
-                output_env.logln(&format!("    > {program} not found"));
-                return false;
-            }
-            true
-        };
-        if !check_program("tendermint-testgen")
-            || !check_program("apalache-mc")
-            || !check_program("jsonatr")
-            || !check_program("timeout")
-        {
-            output_env.logln("    failed to find necessary programs; consider adding them to your PATH. skipping the test");
-            return;
+        for program in ["tendermint-testgen", "apalache-mc", "jsonatr", "timeout"] {
+            assert!(
+                Command::exists_program(program),
+                "{program} not found in PATH; see tests/support/model_based/README.md"
+            );
         }
         env.copy_file_from_env(root_env, "Lightclient_003_draft.tla");
         env.copy_file_from_env(root_env, "Blockchain_003_draft.tla");

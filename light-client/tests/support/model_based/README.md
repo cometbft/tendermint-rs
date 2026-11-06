@@ -25,12 +25,12 @@ When you run `cargo test` some machinery will run under the hood, namely:
 
 So, for the model-based test to run, the programs `apalache-mc`, `jsonatr`, `tendermint-testgen`
 and `timeout` should be present in your `PATH`. 
-If any of the programs is not found, execution of a model-based test will be skipped.
+If any of the programs is not found, the model-based tests fail.
 
 #### Installing Apalache
 
-First, download the latest Apalache's release from [here](https://github.com/informalsystems/apalache/releases).
-Then, unpack it, find the `apalache-pkg-X.Y.Z-full.jar` file, and create an executable bash script named `apalache-mc` with the following content:
+The models and the counterexample transformation require Apalache [v0.15.4](https://github.com/apalache-mc/apalache/releases/tag/v0.15.4), which runs on Java 11. Older releases reject the model's type annotations; newer releases are untested.
+Download and unpack it, find the `apalache-pkg-X.Y.Z-full.jar` file, and create an executable bash script named `apalache-mc` with the following content:
 
 ```bash
 #!/bin/bash
@@ -43,15 +43,13 @@ Note that having an `apalache-mc` executable, as shown above, is required. Havin
 #### Installing `jsonatr`
 
 ```bash
-$ git clone https://github.com/informalsystems/jsonatr
-$ cd jsonatr/
-$ cargo install --path .
+$ cargo install --git https://github.com/informalsystems/jsonatr --rev 5b8c9ebc909a720a412072b60a35412129b7ccc8
 ```
 
 #### Installing `tendermint-testgen`
 
 ```bash
-$ cargo install tendermint-testgen
+$ cargo install --path testgen
 ```
 
 #### Installing `timeout`
@@ -62,7 +60,7 @@ $ cargo install tendermint-testgen
 To run your model-based tests, use this command:
  
  ```bash
-$ cargo test -p tendermint-light-client --test model_based -- --nocapture
+$ cargo test -p tendermint-light-client --features mbt --test model_based -- --nocapture
  ```
 
 The results will be printed to the screen, 

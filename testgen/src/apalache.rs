@@ -101,24 +101,20 @@ pub fn run_apalache_test(dir: &str, test: ApalacheTestCase) -> io::Result<Apalac
     }
     match cmd.spawn() {
         Ok(run) => {
-            if run.status.success() {
-                if run.stdout.contains("The outcome is: NoError") {
-                    Ok(ApalacheRun::NoCounterexample(run))
-                } else if run.stdout.contains("The outcome is: Error") {
-                    Ok(ApalacheRun::Counterexample(run))
-                } else if run.stdout.contains("The outcome is: Deadlock") {
-                    Ok(ApalacheRun::Deadlock(run))
-                } else {
-                    Ok(ApalacheRun::Unknown(run))
-                }
-            } else if let Some(code) = run.status.code() {
-                match code {
-                    99 => Ok(ApalacheRun::ModelError(run)),
-                    124 => Ok(ApalacheRun::Timeout(run)),
+            // Apalache >= 0.15 exits with a non-zero code when it finds a counterexample,
+            // so classify by the reported outcome before looking at the exit code.
+            if run.stdout.contains("The outcome is: NoError") {
+                Ok(ApalacheRun::NoCounterexample(run))
+            } else if run.stdout.contains("The outcome is: Error") {
+                Ok(ApalacheRun::Counterexample(run))
+            } else if run.stdout.contains("The outcome is: Deadlock") {
+                Ok(ApalacheRun::Deadlock(run))
+            } else {
+                match run.status.code() {
+                    Some(99) => Ok(ApalacheRun::ModelError(run)),
+                    Some(124) | None => Ok(ApalacheRun::Timeout(run)),
                     _ => Ok(ApalacheRun::Unknown(run)),
                 }
-            } else {
-                Ok(ApalacheRun::Timeout(run))
             }
         },
         Err(e) => Err(e),
