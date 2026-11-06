@@ -106,12 +106,14 @@ pub trait VotingPowerCalculator: Send + Sync {
             (trusted_validators, trust_threshold),
             (untrusted_validators, TrustThreshold::TWO_THIRDS),
         )?;
-        trusted_power
-            .check()
-            .map_err(VerificationError::not_enough_trust)?;
+        // Check the untrusted commit first: a block that is not signed by 2/3 of
+        // its own validators is invalid regardless of trust, as in the spec.
         untrusted_power
             .check()
             .map_err(VerificationError::insufficient_signers_overlap)?;
+        trusted_power
+            .check()
+            .map_err(VerificationError::not_enough_trust)?;
         Ok(())
     }
 
@@ -460,7 +462,7 @@ mod tests {
     use tendermint::trust_threshold::TrustThresholdFraction;
     use tendermint_testgen::{
         light_block::generate_signed_header, Commit, Generator, Header,
-        LightBlock as TestgenLightBlock, ValidatorSet, Vote as TestgenVote,
+        LightBlock as TestgenLightBlock, Validator, ValidatorSet, Vote as TestgenVote,
     };
 
     use super::*;
@@ -608,5 +610,37 @@ mod tests {
 
         // ensure the result matches the expected result
         assert_eq!(result_ok.unwrap(), EXPECTED_RESULT);
+    }
+
+    #[test]
+    fn test_insufficient_signers_reported_before_not_enough_trust() {
+        let vp_calculator = ProdVotingPowerCalculator::default();
+        let validators = [
+            Validator::new("a").voting_power(50),
+            Validator::new("b").voting_power(50),
+            Validator::new("c").voting_power(50),
+        ];
+        let header =
+            Header::new(&validators).time(tendermint::Time::from_unix_timestamp(10, 0).unwrap());
+        let mut light_block: LightBlock = TestgenLightBlock::new_default_with_header(header)
+            .generate()
+            .unwrap()
+            .into();
+        for sig in &mut light_block.signed_header.commit.signatures[1..] {
+            *sig = tendermint::block::CommitSig::BlockIdFlagAbsent;
+        }
+        let trusted_validators = ValidatorSet::new(vec!["x", "y"]).generate().unwrap();
+
+        let result = vp_calculator.check_enough_trust_and_signers(
+            &light_block.signed_header,
+            &trusted_validators,
+            TrustThreshold::default(),
+            &light_block.validators,
+        );
+
+        match result {
+            Err(VerificationError(VerificationErrorDetail::InsufficientSignersOverlap(_), _)) => {},
+            other => panic!("expected InsufficientSignersOverlap, got {other:?}"),
+        }
     }
 }
