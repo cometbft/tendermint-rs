@@ -57,7 +57,7 @@ impl TrustThresholdFraction {
         if denominator == 0 {
             return Err(Error::undefined_trust_threshold());
         }
-        if 3 * numerator < denominator {
+        if 3 * u128::from(numerator) < u128::from(denominator) {
             return Err(Error::trust_threshold_too_small());
         }
         Ok(Self {
@@ -96,7 +96,8 @@ impl From<TrustThresholdFraction> for RawTrustThresholdFraction {
 
 impl TrustThreshold for TrustThresholdFraction {
     fn is_enough_power(&self, signed_voting_power: u64, total_voting_power: u64) -> bool {
-        signed_voting_power * self.denominator > total_voting_power * self.numerator
+        u128::from(signed_voting_power) * u128::from(self.denominator)
+            > u128::from(total_voting_power) * u128::from(self.numerator)
     }
 }
 
@@ -185,5 +186,33 @@ mod test {
             assert!(TrustThresholdFraction::new(num, num).is_ok());
             assert!(from_json(num, num).is_ok());
         }
+
+        #[test]
+        fn new_matches_u128_oracle(num in any::<u64>(), denom in any::<u64>()) {
+            let valid = denom != 0
+                && num <= denom
+                && 3 * u128::from(num) >= u128::from(denom);
+            prop_assert_eq!(TrustThresholdFraction::new(num, denom).is_ok(), valid);
+        }
+
+        #[test]
+        fn is_enough_power_matches_u128_oracle(
+            denom in 1..=u64::MAX,
+            num_seed in any::<u64>(),
+            signed in any::<u64>(),
+            total in any::<u64>(),
+        ) {
+            let min_num = denom.div_ceil(3);
+            let num = min_num + num_seed % (denom - min_num + 1);
+            let frac = TrustThresholdFraction::new(num, denom).unwrap();
+            let expected =
+                u128::from(signed) * u128::from(denom) > u128::from(total) * u128::from(num);
+            prop_assert_eq!(frac.is_enough_power(signed, total), expected);
+        }
+    }
+
+    #[test]
+    fn new_max_values_is_one() {
+        assert!(TrustThresholdFraction::new(u64::MAX, u64::MAX).is_ok());
     }
 }
