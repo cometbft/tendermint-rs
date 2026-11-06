@@ -127,7 +127,7 @@ fn testcase(max: u32) -> impl Strategy<Value = TestCase> {
 fn remove_last_block_id_hash(mut tc: TestCase, mut rng: TestRng) -> TestCase {
     let from = tc.target_height.value() + 1;
     let to = tc.trusted_height.value() + 1;
-    let height = rng.gen_range(from, to);
+    let height = rng.random_range(from..to);
 
     dbg!(tc.target_height, tc.trusted_height, height);
 
@@ -143,7 +143,7 @@ fn remove_last_block_id_hash(mut tc: TestCase, mut rng: TestRng) -> TestCase {
 fn corrupt_hash(mut tc: TestCase, mut rng: TestRng) -> TestCase {
     let from = tc.target_height.value();
     let to = tc.trusted_height.value();
-    let height = rng.gen_range(from, to);
+    let height = rng.random_range(from..to);
 
     dbg!(tc.target_height, tc.trusted_height, height);
 
@@ -159,7 +159,7 @@ fn corrupt_hash(mut tc: TestCase, mut rng: TestRng) -> TestCase {
 fn corrupt_last_block_id_hash(mut tc: TestCase, mut rng: TestRng) -> TestCase {
     let from = tc.target_height.value() + 1;
     let to = tc.trusted_height.value() + 1;
-    let height = rng.gen_range(from, to);
+    let height = rng.random_range(from..to);
 
     dbg!(tc.target_height, tc.trusted_height, height);
 
@@ -204,7 +204,7 @@ fn tc_corrupted_hash(max: u32) -> impl Strategy<Value = TestCase> {
 
 proptest! {
     #![proptest_config(ProptestConfig {
-        cases: 20,
+        cases: 64,
         max_shrink_iters: 100,
         ..Default::default()
     })]
