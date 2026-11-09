@@ -661,21 +661,11 @@ mod mbt {
         output_env.remove_file(&tla_test);
         output_env.remove_file(&json_test);
 
-        // Check for the necessary programs
-        let check_program = |program| {
-            if !Command::exists_program(program) {
-                output_env.logln(&format!("    > {program} not found"));
-                return false;
-            }
-            true
-        };
-        if !check_program("tendermint-testgen")
-            || !check_program("apalache-mc")
-            || !check_program("jsonatr")
-            || !check_program("timeout")
-        {
-            output_env.logln("    failed to find necessary programs; consider adding them to your PATH. skipping the test");
-            return;
+        for program in ["tendermint-testgen", "apalache-mc", "jsonatr", "timeout"] {
+            assert!(
+                Command::exists_program(program),
+                "{program} not found in PATH; see tests/support/model_based/README.md"
+            );
         }
         env.copy_file_from_env(root_env, "Lightclient_003_draft.tla");
         env.copy_file_from_env(root_env, "Blockchain_003_draft.tla");
@@ -692,6 +682,12 @@ mod mbt {
         }
         output_env.copy_file_from_env_as(env, "counterexample.tla", &tla_test);
 
+        let mut counterexample: serde_json::Value =
+            serde_json::from_str(&env.read_file("counterexample.json").unwrap()).unwrap();
+        sort_history(&mut counterexample);
+        env.write_file("counterexample.json", &counterexample.to_string())
+            .unwrap();
+
         let transform_spec = root_env
             .full_canonical_path("_jsonatr-lib/apalache_to_lite_test.json")
             .unwrap();
@@ -703,10 +699,43 @@ mod mbt {
         assert!(run_jsonatr_transform(env.current_dir(), transform).is_ok());
         output_env.copy_file_from_env_as(env, "test.json", &json_test);
 
-        let mut tc: SingleStepTestCase = env.parse_file("test.json").unwrap();
+        let mut tc: SingleStepTestCase =
+            serde_json::from_str(&env.read_file("test.json").unwrap()).unwrap();
         tc.description.clone_from(&json_test);
         output_env.write_file(json_test, &serde_json::to_string_pretty(&tc).unwrap());
         single_step_test(tc, env, root_env, output_env);
+    }
+
+    /// Apalache writes the entries of the `history` function (`0 :> a @@ 1 :> b @@ ...`)
+    /// in arbitrary order, but the jsonatr transform reads them in document order.
+    /// Rebuild each `history` as a left-nested `@@` chain sorted by key.
+    fn sort_history(counterexample: &mut serde_json::Value) {
+        fn collect(value: &serde_json::Value, entries: &mut Vec<serde_json::Value>) {
+            match value.get("atat").and_then(|v| v.as_array()) {
+                Some(parts) => parts.iter().for_each(|part| collect(part, entries)),
+                None => entries.push(value.clone()),
+            }
+        }
+
+        let declarations = counterexample["declarations"].as_array_mut().unwrap();
+        for declaration in declarations {
+            let Some(conjuncts) = declaration
+                .get_mut("body")
+                .and_then(|body| body.get_mut("and"))
+                .and_then(|and| and.as_array_mut())
+            else {
+                continue;
+            };
+            for conjunct in conjuncts.iter_mut().filter(|c| c["eq"] == "history") {
+                let mut entries = Vec::new();
+                collect(&conjunct["arg"], &mut entries);
+                entries.sort_by_key(|entry| entry["colonGreater"].as_i64());
+                conjunct["arg"] = entries
+                    .into_iter()
+                    .reduce(|acc, entry| serde_json::json!({ "atat": [acc, entry] }))
+                    .unwrap();
+            }
+        }
     }
 
     fn model_based_test_batch(batch: ApalacheTestBatch) -> Vec<(String, String)> {

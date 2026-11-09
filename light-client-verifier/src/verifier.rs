@@ -280,9 +280,9 @@ where
     ///       their (next) validator sets hashes match.
     ///     - Otherwise, ensure that the untrusted block has a greater height than the trusted
     ///       block.
+    /// - Verify that more than 2/3 of the validators correctly committed the block.
     /// - Check there is enough overlap between the validator sets of the trusted and untrusted
     ///   blocks.
-    /// - Verify that more than 2/3 of the validators correctly committed the block.
     ///
     /// **NOTE**: If the untrusted state's `next_validators` field is `None`,
     /// this will not (and will not be able to) check whether the untrusted

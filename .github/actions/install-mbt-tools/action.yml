@@ -1,0 +1,22 @@
+name: Install model-based testing tools
+description: Installs Java, Apalache, jsonatr and tendermint-testgen, which the light client's `mbt` tests need.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '11'
+    - name: Install Apalache
+      shell: bash
+      run: |
+        mkdir -p "$RUNNER_TEMP/apalache"
+        curl -sSL https://github.com/apalache-mc/apalache/releases/download/v0.15.4/apalache-v0.15.4.tgz \
+          | tar -xz -C "$RUNNER_TEMP/apalache"
+        echo "$RUNNER_TEMP/apalache/bin" >> "$GITHUB_PATH"
+    - name: Install jsonatr
+      shell: bash
+      run: cargo install --git https://github.com/informalsystems/jsonatr --rev 5b8c9ebc909a720a412072b60a35412129b7ccc8
+    - name: Install tendermint-testgen
+      shell: bash
+      run: cargo install --path testgen

@@ -27,7 +27,8 @@
         "block": {
           "signed_header": "$block | block_to_signed_header",
           "validator_set": "$block | block_validators | ids_to_validator_set",
-          "next_validator_set": "$block | block_next_validators | ids_to_validator_set"
+          "next_validator_set": "$block | block_next_validators | ids_to_validator_set",
+          "provider": "BADFADAD0BEFEEDC0C0ADEADBEEFC0FFEEFACADE"
         },
         "testgen_block": {
           "header": "$block | block_to_header",
