@@ -3,7 +3,6 @@
 use core::str::FromStr;
 use std::{collections::BTreeMap as HashMap, fs, path::PathBuf};
 
-use subtle_encoding::{base64, hex};
 use tendermint::{
     abci,
     evidence::{Duration, Evidence},
@@ -13,6 +12,7 @@ use tendermint::{
     Hash,
 };
 use tendermint_config::net::Address;
+use tendermint_proto::encoding::{base64, hex};
 use tendermint_rpc::{
     endpoint,
     error::{Error, ErrorDetail},

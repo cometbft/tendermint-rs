@@ -12,7 +12,7 @@ use crate::public_key::PublicKey;
 #[cfg(feature = "rust-crypto")]
 use serde::{de, ser, Deserialize, Serialize};
 #[cfg(feature = "rust-crypto")]
-use subtle_encoding::{Base64, Encoding};
+use tendermint_proto::encoding::base64;
 #[cfg(feature = "rust-crypto")]
 use zeroize::Zeroizing;
 
@@ -89,7 +89,7 @@ fn serialize_secp256k1_privkey<S>(signing_key: &Secp256k1, serializer: S) -> Res
 where
     S: ser::Serializer,
 {
-    Zeroizing::new(String::from_utf8(Base64::default().encode(signing_key.to_bytes())).unwrap())
+    Zeroizing::new(String::from_utf8(base64::encode(signing_key.to_bytes())).unwrap())
         .serialize(serializer)
 }
 
@@ -102,8 +102,7 @@ where
     use de::Error;
     let string = Zeroizing::new(String::deserialize(deserializer)?);
     let mut privkey_bytes = Zeroizing::new([0u8; SECP256K1_KEY_SIZE]);
-    let decoded_len = Base64::default()
-        .decode_to_slice(string.as_bytes(), &mut *privkey_bytes)
+    let decoded_len = base64::decode_to_slice(string.as_bytes(), &mut *privkey_bytes)
         .map_err(D::Error::custom)?;
 
     if decoded_len != SECP256K1_KEY_SIZE {
@@ -127,7 +126,7 @@ where
     let mut keypair_bytes = Zeroizing::new([0u8; ED25519_KEYPAIR_SIZE]);
     keypair_bytes[0..32].copy_from_slice(signing_key.as_bytes());
     keypair_bytes[32..64].copy_from_slice(signing_key.verification_key().as_bytes());
-    Zeroizing::new(String::from_utf8(Base64::default().encode(&keypair_bytes[..])).unwrap())
+    Zeroizing::new(String::from_utf8(base64::encode(&keypair_bytes[..])).unwrap())
         .serialize(serializer)
 }
 
@@ -140,8 +139,7 @@ where
     use de::Error;
     let string = Zeroizing::new(String::deserialize(deserializer)?);
     let mut keypair_bytes = Zeroizing::new([0u8; ED25519_KEYPAIR_SIZE]);
-    let decoded_len = Base64::default()
-        .decode_to_slice(string.as_bytes(), &mut *keypair_bytes)
+    let decoded_len = base64::decode_to_slice(string.as_bytes(), &mut *keypair_bytes)
         .map_err(D::Error::custom)?;
 
     if decoded_len != ED25519_KEYPAIR_SIZE {

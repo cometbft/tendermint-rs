@@ -3,7 +3,7 @@
 use alloc::borrow::Cow;
 
 use serde::{de, ser, Deserialize, Deserializer, Serializer};
-use subtle_encoding::hex;
+use tendermint_proto::encoding::hex;
 
 use crate::{hash::Algorithm, prelude::*, Hash};
 

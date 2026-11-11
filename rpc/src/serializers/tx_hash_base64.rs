@@ -1,7 +1,7 @@
 //! Encoding/decoding ABCI transaction hashes to/from base64.
 
 use serde::{Deserialize, Deserializer, Serializer};
-use subtle_encoding::base64;
+use tendermint_proto::encoding::base64;
 
 use crate::prelude::*;
 use tendermint::{hash::Algorithm, Hash};

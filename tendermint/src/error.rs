@@ -206,9 +206,9 @@ define_error! {
             [ DisplayOnly<time::error::Parse> ]
             |_| { format_args!("time parsing error") },
 
-        SubtleEncoding
-            [ DisplayOnly<subtle_encoding::Error> ]
-            |_| { format_args!("subtle encoding error") },
+        Encoding
+            [ DisplayOnly<tendermint_proto::encoding::Error> ]
+            |_| { format_args!("encoding error") },
 
         Signature
             |_| { "signature error" },

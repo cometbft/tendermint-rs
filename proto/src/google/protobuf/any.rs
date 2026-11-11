@@ -1,8 +1,8 @@
 // Original code from <https://github.com/influxdata/pbjson/blob/main/pbjson-types/src/any.rs>
 // Copyright 2022 Dan Burkert & Tokio Contributors
 
+use crate::encoding::base64;
 use prost::{DecodeError, EncodeError, Message, Name};
-use subtle_encoding::base64;
 
 use crate::prelude::*;
 

@@ -143,7 +143,7 @@ impl<H: Sha256> MerkleHash for NonIncremental<H> {
 #[cfg(all(test, feature = "rust-crypto"))]
 mod tests {
     use sha2::Sha256;
-    use subtle_encoding::hex;
+    use tendermint_proto::encoding::hex;
 
     use super::*; // TODO: use non-subtle ?
 
