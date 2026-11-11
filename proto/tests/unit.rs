@@ -107,3 +107,12 @@ pub fn protobuf_struct_conveniences_example() {
     let new_domain_type = BlockId::decode_length_delimited_vec(&wire).unwrap();
     assert_eq!(my_domain_type, new_domain_type);
 }
+
+/// prost-build 0.14 derives `Eq + Hash` on messages using these as `extern_path` types.
+#[test]
+fn google_protobuf_types_implement_eq_and_hash() {
+    fn assert_eq_hash<T: Eq + core::hash::Hash>() {}
+    assert_eq_hash::<tendermint_proto::google::protobuf::Any>();
+    assert_eq_hash::<tendermint_proto::google::protobuf::Duration>();
+    assert_eq_hash::<tendermint_proto::google::protobuf::Timestamp>();
+}
