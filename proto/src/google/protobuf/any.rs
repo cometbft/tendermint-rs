@@ -48,7 +48,7 @@ use super::PACKAGE;
 ///    "value": "Cg0KB2NvcnA="
 /// }
 /// ```
-#[derive(Clone, PartialEq, Eq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 #[cfg_attr(feature = "json-schema", derive(::schemars::JsonSchema))]
 pub struct Any {
     /// A URL/resource name that uniquely identifies the type of the serialized
