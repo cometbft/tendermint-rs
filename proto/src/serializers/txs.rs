@@ -1,6 +1,6 @@
 //! Serialize/deserialize `Vec<Vec<u8>>` type from and into transactions (Base64String array).
+use crate::encoding::base64;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use subtle_encoding::base64;
 
 use crate::prelude::*;
 use crate::serializers::cow_str::CowStr;

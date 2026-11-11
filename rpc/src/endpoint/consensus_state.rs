@@ -3,12 +3,12 @@
 use core::{fmt, str::FromStr};
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use subtle_encoding::hex;
 use tendermint::{
     account,
     block::{Height, Round},
     hash, vote, Hash, Time,
 };
+use tendermint_proto::encoding::hex;
 
 use crate::{dialect::Dialect, prelude::*, request::RequestMessage, Error, Method};
 

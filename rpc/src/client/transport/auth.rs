@@ -5,7 +5,7 @@
 use alloc::string::{String, ToString};
 use core::fmt;
 
-use subtle_encoding::base64;
+use tendermint_proto::encoding::base64;
 use url::Url;
 
 /// An HTTP authorization.

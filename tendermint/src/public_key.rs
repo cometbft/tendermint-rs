@@ -12,7 +12,7 @@ pub use pub_key_response::PubKeyResponse;
 use core::{cmp::Ordering, fmt, str::FromStr};
 use serde::{de, ser, Deserialize, Deserializer, Serialize};
 use serde_json::Value;
-use subtle_encoding::{base64, bech32, hex};
+use tendermint_proto::encoding::{base64, bech32, hex};
 
 pub use crate::crypto::ed25519::VerificationKey as Ed25519;
 use crate::{error::Error, prelude::*};
@@ -416,7 +416,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use subtle_encoding::hex;
+    use tendermint_proto::encoding::hex;
 
     use super::{PublicKey, TendermintKey};
     use crate::{prelude::*, public_key::PubKeyResponse};

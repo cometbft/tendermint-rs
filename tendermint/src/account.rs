@@ -8,7 +8,7 @@ use core::{
 use bytes::Bytes;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use subtle::ConstantTimeEq;
-use subtle_encoding::hex;
+use tendermint_proto::encoding::hex;
 
 use tendermint_proto::Protobuf;
 
@@ -186,7 +186,7 @@ impl FromStr for Id {
         // Accept either upper or lower case hex
         let bytes = hex::decode_upper(s)
             .or_else(|_| hex::decode(s))
-            .map_err(Error::subtle_encoding)?;
+            .map_err(Error::encoding)?;
 
         bytes.try_into()
     }

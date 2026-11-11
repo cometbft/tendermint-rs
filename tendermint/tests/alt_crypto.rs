@@ -53,7 +53,7 @@ mod tests {
     use tendermint::crypto::Sha256;
     use tendermint::{PublicKey, Signature};
 
-    use subtle_encoding::hex;
+    use tendermint_proto::encoding::hex;
 
     #[test]
     fn sha256_can_hash() {

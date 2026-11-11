@@ -18,6 +18,7 @@ use prost::Message;
 pub use error::Error;
 pub use tendermint::*;
 
+pub mod encoding;
 pub mod serializers;
 
 use prelude::*;

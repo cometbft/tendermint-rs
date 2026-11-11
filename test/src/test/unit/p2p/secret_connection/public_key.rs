@@ -1,5 +1,5 @@
-use subtle_encoding::hex;
 use tendermint_p2p::secret_connection::PublicKey;
+use tendermint_proto::encoding::hex;
 
 const EXAMPLE_SECRET_CONN_KEY: &str =
     "F7FEB0B5BA0760B2C58893E329475D1EA81781DD636E37144B6D599AD38AA825";

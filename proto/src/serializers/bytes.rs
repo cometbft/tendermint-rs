@@ -2,8 +2,8 @@
 
 /// Serialize into hexstring, deserialize from hexstring
 pub mod hexstring {
+    use crate::encoding::hex;
     use serde::{Deserialize, Deserializer, Serializer};
-    use subtle_encoding::hex;
 
     use crate::prelude::*;
     use crate::serializers::cow_str::CowStr;
@@ -35,8 +35,8 @@ pub mod hexstring {
 
 /// Serialize into base64string, deserialize from base64string
 pub mod base64string {
+    use crate::encoding::base64;
     use serde::{Deserialize, Deserializer, Serializer};
-    use subtle_encoding::base64;
 
     use crate::prelude::*;
     use crate::serializers::cow_str::CowStr;
@@ -76,8 +76,8 @@ pub mod base64string {
 
 /// Serialize into and deserialize from a sequence of _base64string_.
 pub mod vec_base64string {
+    use crate::encoding::base64;
     use serde::{Deserialize, Deserializer, Serializer};
-    use subtle_encoding::base64;
 
     use crate::prelude::*;
     use crate::serializers::cow_str::CowStr;
@@ -112,8 +112,8 @@ pub mod vec_base64string {
 
 /// Serialize into and deserialize from an optional _base64string_.
 pub mod option_base64string {
+    use crate::encoding::base64;
     use serde::{Deserialize, Deserializer, Serializer};
-    use subtle_encoding::base64;
 
     use crate::prelude::*;
     use crate::serializers::cow_str::CowStr;

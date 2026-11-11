@@ -7,7 +7,7 @@ use core::{
 
 use bytes::Bytes;
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize, Serializer};
-use subtle_encoding::{base64, Encoding, Hex};
+use tendermint_proto::encoding::{base64, hex};
 use tendermint_proto::serializers::cow_str::CowStr;
 use tendermint_proto::Protobuf;
 
@@ -106,9 +106,7 @@ impl Hash {
         match alg {
             Algorithm::Sha256 => {
                 let mut h = [0u8; SHA256_HASH_SIZE];
-                Hex::upper_case()
-                    .decode_to_slice(s.as_bytes(), &mut h)
-                    .map_err(Error::subtle_encoding)?;
+                hex::decode_upper_to_slice(s.as_bytes(), &mut h).map_err(Error::encoding)?;
                 Ok(Hash::Sha256(h))
             },
         }
@@ -148,7 +146,7 @@ impl Debug for Hash {
 impl Display for Hash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let hex = match self {
-            Hash::Sha256(ref h) => Hex::upper_case().encode_to_string(h).unwrap(),
+            Hash::Sha256(ref h) => String::from_utf8(hex::encode_upper(h)).unwrap(),
             Hash::None => String::new(),
         };
 
@@ -249,15 +247,13 @@ impl AppHash {
             return Err(Error::invalid_app_hash_length());
         }
         let mut h = vec![0; s.len() / 2];
-        Hex::upper_case()
-            .decode_to_slice(s.as_bytes(), &mut h)
-            .map_err(Error::subtle_encoding)?;
+        hex::decode_upper_to_slice(s.as_bytes(), &mut h).map_err(Error::encoding)?;
         Ok(AppHash(h))
     }
 
     /// Decode a `Hash` from base64-encoded string
     pub fn from_base64(s: &str) -> Result<Self, Error> {
-        let h = base64::decode(s).map_err(Error::subtle_encoding)?;
+        let h = base64::decode(s).map_err(Error::encoding)?;
         Ok(AppHash(h))
     }
 }
@@ -273,7 +269,7 @@ impl Debug for AppHash {
         write!(
             f,
             "AppHash({})",
-            Hex::upper_case().encode_to_string(&self.0).unwrap()
+            String::from_utf8(hex::encode_upper(&self.0)).unwrap()
         )
     }
 }
@@ -283,7 +279,7 @@ impl Display for AppHash {
         write!(
             f,
             "{}",
-            Hex::upper_case().encode_to_string(&self.0).unwrap()
+            String::from_utf8(hex::encode_upper(&self.0)).unwrap()
         )
     }
 }

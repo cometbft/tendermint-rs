@@ -1,8 +1,8 @@
 //! Encoding/decoding Tendermint hashes to/from base64.
 
 use serde::{Deserialize, Deserializer, Serializer};
-use subtle_encoding::base64;
 use tendermint::hash::{Algorithm::Sha256, Hash, SHA256_HASH_SIZE};
+use tendermint_proto::encoding::base64;
 
 use crate::prelude::*;
 
