@@ -190,7 +190,8 @@ impl Handshake<AwaitingAuthSig> {
                 ed25519_consensus::VerificationKey::try_from(&bytes[..])
                     .map_err(|_| Error::signature())
             },
-            proto::crypto::public_key::Sum::Secp256k1(_) => Err(Error::unsupported_key()),
+            proto::crypto::public_key::Sum::Secp256k1(_)
+            | proto::crypto::public_key::Sum::Mldsa65(_) => Err(Error::unsupported_key()),
         }?;
 
         let remote_sig = ed25519_consensus::Signature::try_from(auth_sig_msg.sig.as_slice())
