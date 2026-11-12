@@ -56,7 +56,7 @@ pub struct ProofOps {
 /// PublicKey defines the keys available for use with Validators
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct PublicKey {
-    #[prost(oneof = "public_key::Sum", tags = "1, 2")]
+    #[prost(oneof = "public_key::Sum", tags = "1, 2, 4")]
     pub sum: ::core::option::Option<public_key::Sum>,
 }
 /// Nested message and enum types in `PublicKey`.
@@ -77,5 +77,11 @@ pub mod public_key {
             with = "crate::serializers::bytes::base64string"
         )]
         Secp256k1(::prost::alloc::vec::Vec<u8>),
+        #[prost(bytes, tag = "4")]
+        #[serde(
+            rename = "cometbft/PubKeyMlDsa65",
+            with = "crate::serializers::bytes::base64string"
+        )]
+        Mldsa65(::prost::alloc::vec::Vec<u8>),
     }
 }

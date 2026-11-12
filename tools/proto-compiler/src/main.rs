@@ -81,7 +81,7 @@ fn main() {
 
         let out_dir = var("OUT_DIR")
             .map(|d| Path::new(&d).join(version.ident))
-            .or_else(|_| tempdir().map(|d| d.into_path()))
+            .or_else(|_| tempdir().map(|d| d.keep()))
             .unwrap();
 
         let mut pb = prost_build::Config::new();

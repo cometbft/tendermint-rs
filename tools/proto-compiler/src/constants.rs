@@ -29,7 +29,7 @@ pub const TENDERMINT_VERSIONS: &[TendermintVersion] = &[
     TendermintVersion {
         repo: "https://github.com/cometbft/cometbft",
         ident: "v0_38",
-        commitish: "v0.38.12",
+        commitish: "v0.38.26",
     },
 ];
 
@@ -57,6 +57,7 @@ const PART_SET_HEADER_TOTAL: &str =
     r#"#[serde(with = "crate::serializers::part_set_header_total")]"#;
 const RENAME_EDPUBKEY: &str = r#"#[serde(rename = "tendermint/PubKeyEd25519", with = "crate::serializers::bytes::base64string")]"#;
 const RENAME_SECPPUBKEY: &str = r#"#[serde(rename = "tendermint/PubKeySecp256k1", with = "crate::serializers::bytes::base64string")]"#;
+const RENAME_MLDSA65PUBKEY: &str = r#"#[serde(rename = "cometbft/PubKeyMlDsa65", with = "crate::serializers::bytes::base64string")]"#;
 const RENAME_SRPUBKEY: &str = r#"#[serde(rename = "tendermint/PubKeySr25519", with = "crate::serializers::bytes::base64string")]"#;
 const RENAME_DUPLICATEVOTE: &str = r#"#[serde(rename = "tendermint/DuplicateVoteEvidence")]"#;
 const RENAME_LIGHTCLIENTATTACK: &str =
@@ -233,6 +234,10 @@ pub static CUSTOM_FIELD_ATTRIBUTES: &[(&str, &str)] = &[
     (
         ".tendermint.crypto.PublicKey.sum.secp256k1",
         RENAME_SECPPUBKEY,
+    ),
+    (
+        ".tendermint.crypto.PublicKey.sum.mldsa65",
+        RENAME_MLDSA65PUBKEY,
     ),
     (".tendermint.crypto.PublicKey.sum.sr25519", RENAME_SRPUBKEY),
     (".tendermint.types.TxProof.data", BASE64STRING),
