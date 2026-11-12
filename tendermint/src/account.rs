@@ -131,6 +131,13 @@ tendermint_pb_modules! {
                 bytes.copy_from_slice(&ripemd_digest[..LENGTH]);
                 return Ok(Id(bytes))
             }
+            // SHA256(pk)[:20], as for Ed25519
+            #[cfg(feature = "mldsa65")]
+            if let Some(b) = crate::public_key::MlDsa65Sum::mldsa65_bytes(sum) {
+                let pk = crate::public_key::MlDsa65::try_from(b)?;
+                let digest = Sha256::digest(pk.as_bytes());
+                return Ok(Id(digest[..LENGTH].try_into().unwrap()))
+            }
             Err(Error::invalid_key("not an ed25519 key".to_string()))
         }
     }
@@ -173,6 +180,12 @@ mod key_conversions {
                 PublicKey::Ed25519(pk) => Id::from(pk),
                 #[cfg(feature = "secp256k1")]
                 PublicKey::Secp256k1(pk) => Id::from(pk),
+                // SHA256(pk)[:20], as for Ed25519
+                #[cfg(feature = "mldsa65")]
+                PublicKey::MlDsa65(pk) => {
+                    let digest = Sha256::digest(pk.as_bytes());
+                    Id(digest[..LENGTH].try_into().unwrap())
+                },
             }
         }
     }

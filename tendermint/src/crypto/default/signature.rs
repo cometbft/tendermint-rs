@@ -27,6 +27,10 @@ impl crate::crypto::signature::Verifier for Verifier {
                     .map_err(|_| Error::MalformedSignature)?;
                 pk.verify(msg, &sig).map_err(|_| Error::VerificationFailed)
             },
+            #[cfg(feature = "mldsa65")]
+            PublicKey::MlDsa65(pk) => {
+                crate::crypto::mldsa65::verify(&pk, msg, signature.as_bytes())
+            },
             _ => Err(Error::UnsupportedKeyType),
         }
     }
@@ -192,7 +196,7 @@ mod tests {
             let public_key = PublicKey::from_raw_ed25519(public_key).unwrap();
             match public_key {
                 PublicKey::Ed25519(_) => {},
-                #[cfg(feature = "secp256k1")]
+                #[cfg(any(feature = "secp256k1", feature = "mldsa65"))]
                 _ => panic!("expected public key to be Ed25519: {:?}", public_key),
             }
             let sig = Signature::try_from(sig).unwrap();

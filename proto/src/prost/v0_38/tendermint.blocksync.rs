@@ -51,3 +51,34 @@ pub mod message {
         StatusResponse(super::StatusResponse),
     }
 }
+/// SigCountMessage is a stripped down view of Message used by the blocksync
+/// MsgBytesFilter for validation before unmarshalling the full BlockResponse
+/// Message. Only the BlockResponse oneof case is modelled, and only the path
+/// down to {Block,Extended}Commit.signatures.
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SigCountMessage {
+    #[prost(message, optional, tag = "3")]
+    pub block_response: ::core::option::Option<SigCountBlockResponse>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SigCountBlockResponse {
+    #[prost(message, optional, tag = "1")]
+    pub block: ::core::option::Option<SigCountBlock>,
+    #[prost(message, optional, tag = "2")]
+    pub ext_commit: ::core::option::Option<SigCountExtendedCommit>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SigCountBlock {
+    #[prost(message, optional, tag = "4")]
+    pub last_commit: ::core::option::Option<SigCountCommit>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SigCountCommit {
+    #[prost(bytes = "vec", repeated, tag = "4")]
+    pub signatures: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
+pub struct SigCountExtendedCommit {
+    #[prost(bytes = "vec", repeated, tag = "4")]
+    pub extended_signatures: ::prost::alloc::vec::Vec<::prost::alloc::vec::Vec<u8>>,
+}

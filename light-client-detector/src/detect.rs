@@ -113,7 +113,10 @@ where
 
 /// An error that arised when comparing a header from the primary with a header from a witness
 /// with [`compare_new_header_with_witness`].
+// `Other` carries the verifier's error detail, which grows by ~2 KB when
+// `tendermint/mldsa65` is enabled (ML-DSA-65 keys are stored inline).
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum CompareError {
     /// There may have been an attack on this light client
     ConflictingHeaders(Box<LightBlock>),

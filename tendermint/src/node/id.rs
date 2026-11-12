@@ -81,7 +81,7 @@ mod key_conversions {
         fn try_from(pk: PublicKey) -> Result<Self, Self::Error> {
             match pk {
                 PublicKey::Ed25519(ed25519) => Ok(Id::from(ed25519)),
-                #[cfg(feature = "secp256k1")]
+                #[cfg(any(feature = "secp256k1", feature = "mldsa65"))]
                 _ => Err(Error::unsupported_key_type()),
             }
         }

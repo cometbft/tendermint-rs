@@ -18,7 +18,11 @@ use crate::{
 
 /// Represents the result of the verification performed by the
 /// verifier component.
+// With `mldsa65`, `PublicKey` (and so the `ValidatorSet` held inline by
+// `VerificationErrorDetail::FaultySigner`) carries a 1952-byte key; this only
+// affects the size of the error path.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "mldsa65", allow(clippy::large_enum_variant))]
 pub enum Verdict {
     /// Verification succeeded, the block is valid.
     Success,

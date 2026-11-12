@@ -8,6 +8,9 @@
 //! `digest` and `signature` crates.
 
 pub mod ed25519;
+#[cfg(feature = "mldsa65")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mldsa65")))]
+pub mod mldsa65;
 pub mod sha256;
 pub mod signature;
 
