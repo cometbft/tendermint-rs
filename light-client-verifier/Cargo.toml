@@ -26,6 +26,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 [features]
 default = ["rust-crypto", "flex-error/std"]
 rust-crypto = ["tendermint/rust-crypto"]
+mldsa65 = ["rust-crypto", "tendermint/mldsa65"]
 
 [dependencies]
 tendermint = { version = "0.41.0", path = "../tendermint", default-features = false }

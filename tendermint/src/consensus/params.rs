@@ -72,6 +72,9 @@ fn key_type(s: &str) -> public_key::Algorithm {
     if s == "Secp256k1" || s == "secp256k1" {
         return public_key::Algorithm::Secp256k1;
     }
+    if s == "ml_dsa_65" {
+        return public_key::Algorithm::MlDsa65;
+    }
     public_key::Algorithm::Ed25519 // Todo: Shall we error out for invalid key types?
 }
 
@@ -181,6 +184,7 @@ mod v0_34 {
                     .map(|k| match k {
                         public_key::Algorithm::Ed25519 => "ed25519".to_string(),
                         public_key::Algorithm::Secp256k1 => "secp256k1".to_string(),
+                        public_key::Algorithm::MlDsa65 => "ml_dsa_65".to_string(),
                     })
                     .collect(),
             }
@@ -275,6 +279,7 @@ mod v0_37 {
                     .map(|k| match k {
                         public_key::Algorithm::Ed25519 => "ed25519".to_string(),
                         public_key::Algorithm::Secp256k1 => "secp256k1".to_string(),
+                        public_key::Algorithm::MlDsa65 => "ml_dsa_65".to_string(),
                     })
                     .collect(),
             }
@@ -370,6 +375,7 @@ mod v0_38 {
                     .map(|k| match k {
                         public_key::Algorithm::Ed25519 => "ed25519".to_string(),
                         public_key::Algorithm::Secp256k1 => "secp256k1".to_string(),
+                        public_key::Algorithm::MlDsa65 => "ml_dsa_65".to_string(),
                     })
                     .collect(),
             }

@@ -1,0 +1,8 @@
+module fixturegen
+
+go 1.24
+
+require github.com/cometbft/cometbft v0.40.0
+
+// Point at a local checkout of cometbft at tag v0.40.0.
+replace github.com/cometbft/cometbft => /path/to/cometbft

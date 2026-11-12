@@ -10,8 +10,16 @@ use tendermint_proto::Protobuf;
 
 use crate::{error::Error, prelude::*};
 
-/// The expected length of all currently supported signatures, in bytes.
+/// The length of Ed25519 and secp256k1 signatures, in bytes.
 pub const SIGNATURE_LENGTH: usize = 64;
+
+/// The length of ML-DSA-65 signatures, in bytes.
+///
+/// Signatures of this length are accepted by [`Signature::new`] regardless of
+/// whether the `mldsa65` feature is enabled, so that blocks and commits from
+/// chains with ML-DSA-65 validators can be decoded; verifying them requires
+/// the feature.
+pub const MLDSA65_SIGNATURE_LENGTH: usize = 3309;
 
 /// Signatures
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -64,10 +72,11 @@ impl Signature {
         if bytes.is_empty() {
             return Ok(None);
         }
-        if bytes.len() != SIGNATURE_LENGTH {
+        if bytes.len() != SIGNATURE_LENGTH && bytes.len() != MLDSA65_SIGNATURE_LENGTH {
             return Err(Error::signature_invalid(format!(
-                "expected signature to be {} bytes long, but was {} bytes",
+                "expected signature to be {} or {} bytes long, but was {} bytes",
                 SIGNATURE_LENGTH,
+                MLDSA65_SIGNATURE_LENGTH,
                 bytes.len()
             )));
         }
