@@ -8,7 +8,7 @@
   v0.37 `PublicKey` yields an empty `sum`, which fails to decode.
   `PublicKey::to_bech32` uses the amino prefix derived from the registered
   name `cometbft/PubKeyMlDsa65`; CometBFT itself defines no bech32 form.
-  ([\#PRNUM2](https://github.com/cometbft/tendermint-rs/pull/PRNUM2))
+  ([\#1533](https://github.com/cometbft/tendermint-rs/pull/1533))
 - `[tendermint-light-client-verifier]` Add an `mldsa65` feature that enables
   verification of commits signed by ML-DSA-65 validators
-  ([\#PRNUM2](https://github.com/cometbft/tendermint-rs/pull/PRNUM2))
+  ([\#1533](https://github.com/cometbft/tendermint-rs/pull/1533))

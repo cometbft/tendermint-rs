@@ -3,4 +3,4 @@
   failing (JSON) or being read as Ed25519 (protobuf). `Signature::new` now
   also accepts 3309-byte (ML-DSA-65) signatures, independent of the
   `mldsa65` feature
-  ([\#PRNUM2](https://github.com/cometbft/tendermint-rs/pull/PRNUM2))
+  ([\#1533](https://github.com/cometbft/tendermint-rs/pull/1533))
